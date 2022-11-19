@@ -16,7 +16,7 @@ categories = {
     "Access Count": ["Read", "Write", "Fill"]
 }
 
-def generate_random_data(data_points: int) -> list:
+def generate_random_data(data_points: int) -> tuple:
     """
     Generates random data of the type Timeloop will provide.
     
@@ -66,45 +66,48 @@ def generate_random_data(data_points: int) -> list:
 
         data.append(data_point)
     
-    return data
+    return tuple(data)
 
 # Data on the effect of each process (?) on the measured variables.
+generated_data: tuple
 generated_data = generate_random_data(5)
 
-def graph_category(category: str, data: dict = generated_data[0]) -> None:
+def graph_category(category: str, data: tuple = generated_data) -> None:
     """
     Generates a Graph Based on the Category Given
     
     category:
         the category you want graphed
     """
-    # Calculates the amount of bars you need. Assumes all components have even data for all categories.
-    category_size = len(data[tuple(data.keys())[0]][category]) # accesses first component in memory, then checks the number of elements describing that category in component.
-    index = np.arange(category_size) # a list representing all the elements in the category.
+    for i in range(len(data)):
+        mapping_data = data[i]
+        # Calculates the amount of bars you need. Assumes all components have even data for all categories.
+        category_size = len(mapping_data[tuple(mapping_data.keys())[0]][category]) # accesses first component in memory, then checks the number of elements describing that category in component.
+        index = np.arange(category_size) # a list representing all the elements in the category.
 
-    # defines the figure we're showing 
-    fig = plt.subplots(figsize = (10, 7))
-    # the dictionary storing the bar contribution for each component
-    plots = dict()
-    # the bottom of where the bar contribution should be, so that it starts when the last contribution stops
-    bottom_val = np.array([0] * category_size)
+        # defines the figure we're showing 
+        fig = plt.subplots(figsize = (10, 7))
+        # the dictionary storing the bar contribution for each component
+        plots = dict()
+        # the bottom of where the bar contribution should be, so that it starts when the last contribution stops
+        bottom_val = np.array([0] * category_size)
 
-    # accesses all the metrics data for each component
-    components: str
-    metric_data: numeric
-    for (component, metric_data) in data.items():
-        print(tuple(metric_data[category].values()))
-        #Creates the plots for each component
-        plots[component] = plt.bar(index, tuple(metric_data[category].values()), width, bottom = bottom_val)
-        bottom_val += np.array(tuple(metric_data[category].values()))
-    
-    # Show title tick marks
-    plt.title("Relation of Structure to " + category)
-    plt.ylabel("Graph of Each Step")
-    plt.xticks(index, tuple(data[tuple(data.keys())[0]][category].keys()))
-    plt.yticks(np.arange(0, 300, 10))
-    plt.legend(tuple([plot[0] for plot in plots.values()]), tuple(data.keys()))
+        # accesses all the metrics data for each component
+        components: str
+        metric_data: dict
+        for (component, metric_data) in mapping_data.items():
+            print(tuple(metric_data[category].values()))
+            #Creates the plots for each component
+            plots[component] = plt.bar(index, tuple(metric_data[category].values()), width, bottom = bottom_val)
+            bottom_val += np.array(tuple(metric_data[category].values()))
+        
+        # Show title tick marks
+        plt.title("Relation of Structure to " + category)
+        plt.ylabel("Graph of Each Step")
+        plt.xticks(index, tuple(mapping_data[tuple(mapping_data.keys())[0]][category].keys()))
+        plt.yticks(np.arange(0, 300, 10))
+        plt.legend(tuple([plot[0] for plot in plots.values()]), tuple(mapping_data.keys()))
 
-    plt.show()
+        plt.show()
 
 graph_category("Capacity")

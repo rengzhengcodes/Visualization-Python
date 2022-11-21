@@ -71,7 +71,7 @@ def generate_random_data(data_points: int) -> tuple:
 
 # Data on the effect of each process (?) on the measured variables.
 generated_data: tuple
-generated_data = generate_random_data(25)
+generated_data = generate_random_data(5)
 
 def graph_category(category: str, data: tuple = generated_data) -> None:
     """
@@ -82,12 +82,11 @@ def graph_category(category: str, data: tuple = generated_data) -> None:
     """
     # calculates the number of mappings and determine number of plots needed
     number_of_mappings = len(data)
-    mappings_per_side = ceil(number_of_mappings ** (1/2))
     # creates the figure and the subplots
-    fig, subplots = plt.subplots(ceil(number_of_mappings / mappings_per_side), mappings_per_side)
+    fig, subplots = plt.subplots(1, number_of_mappings)
 
     for i in range(len(data)):
-        subplot = subplots[i // mappings_per_side, i % mappings_per_side]
+        subplot = subplots[i]
         mapping_data = data[i]
         # Calculates the amount of bars you need. Assumes all components have even data for all categories.
         category_size = len(mapping_data[tuple(mapping_data.keys())[0]][category]) # accesses first component in memory, then checks the number of elements describing that category in component.
@@ -110,11 +109,22 @@ def graph_category(category: str, data: tuple = generated_data) -> None:
         subplot.set_title(f"Mapping {i + 1}")
         subplot.set_ylabel(category)
         subplot.set_xticks(index, tuple(mapping_data[tuple(mapping_data.keys())[0]][category].keys()))
-        subplot.set_yticks(np.arange(0, 300, 10))
+        subplot.set_yticks(np.arange(0, 301, 300))
         subplot.legend(tuple([plot[0] for plot in plots.values()]), tuple(mapping_data.keys()))
 
     fig.suptitle("Relation of Structure to " + category)
+"""
+def graph_mapping(data: tuple = generated_data) -> None:
+    \"""
+    Takes in all the mapping data and generates a radar data plot for each mapping.
+    data:
+        The data collected from Timeloop.
+    \"""
+    # defines the first element in the dataset, which we assume is of equal shape to the other pieces of data.
+    example_datapoint = data[0]
+    # calculates evenly-spaced axis angles
+    theta = np.linspace(0, 2*np.pi, len(tuple(example_datapoint.values())[0]
+"""
 
 graph_category("Capacity")
-graph_category("Access Count")
 plt.show()

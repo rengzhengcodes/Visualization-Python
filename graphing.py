@@ -1,4 +1,5 @@
-from typing import Union
+from copy import deepcopy
+from typing import *
 # defines the numeric data type for type hinting
 numeric = Union[float, int]
 
@@ -73,6 +74,65 @@ def generate_random_data(data_points: int) -> tuple:
 generated_data: tuple
 generated_data = generate_random_data(5)
 
+def make_data_percentage(data: Iterable = generated_data) -> tuple:
+    """
+    Takes all the data and preprocesses it so that they are in terms of the max value (100%).
+
+    data:
+        An iterable containing all the datapoints we want to normalize over
+    """
+    # makes a copy of the old data
+    data = deepcopy(data)
+    # a dictionary storing the largest value in any category across all datapoints in data
+    largest_in_category: dict
+    largest_in_category = dict()
+
+    # loads all the categories and their respective subcategories (labels) into the dictionary; assumes all data is rectangular
+    example_datapoint = data[0]
+    example_component = tuple(example_datapoint.keys())[0]
+    for category, metric_data in example_datapoint[example_component].items():
+        # the dictionary is to store subcomponents of the category data
+        largest_in_category[category] = dict()
+        for label in metric_data.keys():    
+            # since all metrics we're looking at are whole numbers, we can initalize all max values as 0 for later comparison.
+            largest_in_category[category][label] = 0
+
+    for datapoint in data:
+        # dictionary that stores the running sum of each category across all components
+        running_sum: dict
+        running_sum = dict()
+
+        # pulls the metric data for all components
+        for metric_data in datapoint.values():
+            # pulls the subdata for all labels to add together
+            for category, values in metric_data.items():
+                running_sum[category] = dict()
+                for label, value in values.items():
+                    # instantiates a value if there is no value there
+                    if label not in running_sum[category].keys():
+                        running_sum[category][label] = 0
+                    running_sum[category][label] += value
+
+        # determines max by checking if the values in running sum are greater than the current values of largest_in_category
+        for category, values in running_sum.items():
+            for label, value in values.items():
+                if (running_sum[category][label] > largest_in_category[category][label]):
+                    largest_in_category[category][label] = running_sum[category][label]
+    
+    # uses largest in category to normalize all the data
+    for datapoint in data:
+        for component, metric_data in datapoint.items():
+            for category, values in metric_data.items():
+                for label in values.keys():
+                    datapoint[component][category][label] /= largest_in_category[category][label]
+                    # converts to percentage
+                    datapoint[component][category][label] *= 100
+
+    return data
+
+normalized_data = make_data_percentage()
+print(normalized_data)
+
 def graph_category(category: str, data: tuple = generated_data) -> None:
     """
     Generates a Graph Based on the Category Given
@@ -95,10 +155,9 @@ def graph_category(category: str, data: tuple = generated_data) -> None:
         # the dictionary storing the bar contribution for each component
         plots = dict()
         # the bottom of where the bar contribution should be, so that it starts when the last contribution stops
-        bottom_val = np.array([0] * category_size)
+        bottom_val = np.array([0.0] * category_size)
 
         # accesses all the metrics data for each component
-        components: str
         metric_data: dict
         for (component, metric_data) in mapping_data.items():
             #Creates the plots for each component
@@ -109,7 +168,7 @@ def graph_category(category: str, data: tuple = generated_data) -> None:
         subplot.set_title(f"Mapping {i + 1}")
         subplot.set_ylabel(category)
         subplot.set_xticks(index, tuple(mapping_data[tuple(mapping_data.keys())[0]][category].keys()))
-        subplot.set_yticks(np.arange(0, 301, 300))
+        subplot.set_yticks(np.arange(0, 101, 100))
         subplot.legend(tuple([plot[0] for plot in plots.values()]), tuple(mapping_data.keys()))
 
     fig.suptitle("Relation of Structure to " + category)
@@ -126,5 +185,5 @@ def graph_mapping(data: tuple = generated_data) -> None:
     theta = np.linspace(0, 2*np.pi, len(tuple(example_datapoint.values())[0]
 """
 
-graph_category("Capacity")
+graph_category("Capacity", normalized_data)
 plt.show()

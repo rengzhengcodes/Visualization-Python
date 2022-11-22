@@ -106,7 +106,11 @@ def make_data_percentage(data: Iterable = generated_data) -> tuple:
         for metric_data in datapoint.values():
             # pulls the subdata for all labels to add together
             for category, values in metric_data.items():
-                running_sum[category] = dict()
+                # hodge-podge solution to making sure dict doesn't get reinstatiated. You should proabably just make a key-copy of the largest-sum dict but this works for now.
+                if category not in running_sum.keys():
+                    running_sum[category] = dict()
+                
+                # running sum among all the components in a category
                 for label, value in values.items():
                     # instantiates a value if there is no value there
                     if label not in running_sum[category].keys():

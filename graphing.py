@@ -149,7 +149,7 @@ def graph_category(category: str, data: tuple = generated_data) -> None:
     # creates the figure and the subplots
     fig, subplots = plt.subplots(1, number_of_mappings)
 
-    for i in range(len(data)):
+    for i in range(number_of_mappings):
         subplot = subplots[i]
         mapping_data = data[i]
         # Calculates the amount of bars you need. Assumes all components have even data for all categories.
@@ -176,6 +176,23 @@ def graph_category(category: str, data: tuple = generated_data) -> None:
         subplot.legend(tuple([plot[0] for plot in plots.values()]), tuple(mapping_data.keys()))
 
     fig.suptitle("Relation of Structure to " + category)
+
+def graph_unified_mapping(data: tuple = normalized_data) -> None:
+    """
+    Graphs all the data for a mapping in relation to the max amount in each category for a dataset (set as 100% in the scaling).
+
+    data:
+        The data collected from time loop, processed by the normalization function.
+    """
+
+    #calculates the number of mappings needed to determine the number of plots needed
+    number_of_mappings = len(data)
+    # creates the figure and subplots
+    fig, subplots = plt.subplots(1, number_of_mappings)
+
+    for i in range(number_of_mappings):
+        pass
+
 """
 def graph_mapping(data: tuple = generated_data) -> None:
     \"""

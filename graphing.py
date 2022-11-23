@@ -238,7 +238,7 @@ def graph_unified_mapping(data: tuple = normalized_data) -> None:
         # shows titles and tick marks
         subplot.set_title(f"Mapping {i + 1}")
         subplot.set_ylabel("Percentage of Max")
-        subplot.set_xticks(index, tuple(values.keys()))
+        subplot.set_xticks(index, tuple(values.keys()), rotation = 'vertical')
         subplot.set_yticks(np.arange(0, 101, 100))
         subplot.legend(tuple([plot[0] for plot in plots.values()]), tuple(mapping_data.keys()))
 

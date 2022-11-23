@@ -5,6 +5,7 @@ numeric = Union[float, int]
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from math import *
 
 #np.random.seed(42)
@@ -135,7 +136,7 @@ def make_data_percentage(data: Iterable = generated_data) -> tuple:
     return data
 
 normalized_data = make_data_percentage()
-print(normalized_data)
+# print(normalized_data)
 
 def graph_category(category: str, data: tuple = generated_data) -> None:
     """
@@ -177,6 +178,27 @@ def graph_category(category: str, data: tuple = generated_data) -> None:
 
     fig.suptitle("Relation of Structure to " + category)
 
+def flatten_data_point(datapoint: dict) -> dict:
+    """
+    Takes the data from a datapoint and flattens it into just a key-pair interaction
+    
+    datapoint:
+        A datapoint like the ones generated above
+    
+    Returns:
+        A flattened datapoint of the form:
+        {
+            "Component": {
+                "Capacity Alpha": int,
+                "L1 Read": int,
+                "L1 Write": int,
+                etc etc
+            }
+        }
+    """
+
+    return pd.json_normalize(datapoint, sep = ' ').to_dict(orient = 'records')[0]
+
 def graph_unified_mapping(data: tuple = normalized_data) -> None:
     """
     Graphs all the data for a mapping in relation to the max amount in each category for a dataset (set as 100% in the scaling).
@@ -191,7 +213,37 @@ def graph_unified_mapping(data: tuple = normalized_data) -> None:
     fig, subplots = plt.subplots(1, number_of_mappings)
 
     for i in range(number_of_mappings):
-        pass
+        subplot = subplots[i]
+        mapping_data = data[i]
+        
+        # the dictionary containing each bar plot.
+        plots = dict()
+        
+        for component, values in mapping_data.items():
+            # gets the 1D representation of the data so we don't have to do more processing of the data.
+            values = flatten_data_point(values)
+            print(values)
+            # gets the number of vertical bars we need
+            category_size = len(values)
+            # a list representing the bar count; numerical designators for each bar which we will label later
+            index = np.arange(category_size)
+            # the bottom of where the bar contribution should be for the next component
+            bottom_val = np.array([0.0] * category_size)
+
+            # creates the bars for a given component in the mapping
+            plots[component] = subplot.bar(index, tuple(values.values()), width, bottom = bottom_val)
+            # updates bottom_val to the new bottom for the next thing to display
+            bottom_val += np.array(tuple(values.values()))
+        
+        # shows titles and tick marks
+        subplot.set_title(f"Mapping {i + 1}")
+        subplot.set_ylabel("Percentage of Max")
+        subplot.set_xticks(index, tuple(values.keys()))
+        subplot.set_yticks(np.arange(0, 101, 100))
+        subplot.legend(tuple([plot[0] for plot in plots.values()]), tuple(mapping_data.keys()))
+
+    fig.suptitle("Relation of Structure to Metrics")
+
 
 """
 def graph_mapping(data: tuple = generated_data) -> None:
@@ -206,5 +258,8 @@ def graph_mapping(data: tuple = generated_data) -> None:
     theta = np.linspace(0, 2*np.pi, len(tuple(example_datapoint.values())[0]
 """
 
-graph_category("Capacity", normalized_data)
+# graph_category("Capacity", normalized_data)
+# graph_category("Capacity")
+graph_unified_mapping()
+
 plt.show()

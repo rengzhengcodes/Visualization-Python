@@ -218,6 +218,9 @@ def graph_unified_mapping(data: tuple = normalized_data) -> None:
         
         # the dictionary containing each bar plot.
         plots = dict()
+        # the bottom offset for the graphs
+        bottom_val: np.NDArray
+        bottom_val = None
         
         for component, values in mapping_data.items():
             # gets the 1D representation of the data so we don't have to do more processing of the data.
@@ -228,7 +231,8 @@ def graph_unified_mapping(data: tuple = normalized_data) -> None:
             # a list representing the bar count; numerical designators for each bar which we will label later
             index = np.arange(category_size)
             # the bottom of where the bar contribution should be for the next component
-            bottom_val = np.array([0.0] * category_size)
+            if bottom_val is None: # shoddy workaround again to avoid reinstantiation of the variable
+                bottom_val = np.array([0.0] * category_size)
 
             # creates the bars for a given component in the mapping
             plots[component] = subplot.bar(index, tuple(values.values()), width, bottom = bottom_val)
@@ -239,7 +243,7 @@ def graph_unified_mapping(data: tuple = normalized_data) -> None:
         subplot.set_title(f"Mapping {i + 1}")
         subplot.set_ylabel("Percentage of Max")
         subplot.set_xticks(index, tuple(values.keys()), rotation = 'vertical')
-        subplot.set_yticks(np.arange(0, 101, 100))
+        subplot.set_yticks(np.arange(0, 102, 1))
         subplot.legend(tuple([plot[0] for plot in plots.values()]), tuple(mapping_data.keys()))
 
     fig.suptitle("Relation of Structure to Metrics")

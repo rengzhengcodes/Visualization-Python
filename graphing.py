@@ -129,9 +129,9 @@ def make_data_percentage(data: Iterable = generated_data) -> tuple:
         for component, metric_data in datapoint.items():
             for category, values in metric_data.items():
                 for label in values.keys():
-                    datapoint[component][category][label] /= largest_in_category[category][label]
                     # converts to percentage
                     datapoint[component][category][label] *= 100
+                    datapoint[component][category][label] /= largest_in_category[category][label]
 
     return data
 
@@ -173,7 +173,7 @@ def graph_category(category: str, data: tuple = generated_data) -> None:
         subplot.set_title(f"Mapping {i + 1}")
         subplot.set_ylabel(category)
         subplot.set_xticks(index, tuple(mapping_data[tuple(mapping_data.keys())[0]][category].keys()))
-        subplot.set_yticks(np.arange(0, 101, 100))
+        subplot.set_yticks(np.arange(0, 301, 100))
         subplot.legend(tuple([plot[0] for plot in plots.values()]), tuple(mapping_data.keys()))
 
     fig.suptitle("Relation of Structure to " + category)
@@ -225,7 +225,6 @@ def graph_unified_mapping(data: tuple = normalized_data) -> None:
         for component, values in mapping_data.items():
             # gets the 1D representation of the data so we don't have to do more processing of the data.
             values = flatten_data_point(values)
-            print(values)
             # gets the number of vertical bars we need
             category_size = len(values)
             # a list representing the bar count; numerical designators for each bar which we will label later
@@ -243,8 +242,9 @@ def graph_unified_mapping(data: tuple = normalized_data) -> None:
         subplot.set_title(f"Mapping {i + 1}")
         subplot.set_ylabel("Percentage of Max")
         subplot.set_xticks(index, tuple(values.keys()), rotation = 'vertical')
-        subplot.set_yticks(np.arange(0, 102, 1))
+        subplot.set_yticks(np.arange(0, 101, 100))
         subplot.legend(tuple([plot[0] for plot in plots.values()]), tuple(mapping_data.keys()))
+        subplot.set_ylim((0, 100))
 
     fig.suptitle("Relation of Structure to Metrics")
 
@@ -263,7 +263,8 @@ def graph_mapping(data: tuple = generated_data) -> None:
 """
 
 # graph_category("Capacity", normalized_data)
-# graph_category("Capacity")
+graph_category("Capacity")
+graph_category("Access Count")
 graph_unified_mapping()
 
 plt.show()

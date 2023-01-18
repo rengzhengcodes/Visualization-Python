@@ -3,6 +3,8 @@ from __future__ import annotations
 from colorama import Fore
 # type hinting library
 from typing import Iterable, Set, Any
+# imports parsing
+from parsing import timeloop
 
 # defines the print width
 print_width:int = 25

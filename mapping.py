@@ -1,4 +1,7 @@
 from __future__ import annotations
+# for coloring differences in terminal
+from colorama import Fore
+# type hinting library
 from typing import Iterable, Set, Any
 
 class MappingElement:
@@ -17,7 +20,7 @@ class For(Loop):
     def __init__(self, dimension: str, start: int, end: int):
         super().__init__(dimension, start, end)
 
-    def __eq__(self, other:Any):
+    def __eq__(self, other:Any) -> bool:
         """
         Checks for functional but not strict identity between objects.
         """
@@ -31,7 +34,10 @@ class ParFor(Loop):
     def __init__(self, dimension: str, start: int, end: int):
         super().__init__(dimension, start, end)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
+        """
+        Checks for functional but not strict identity between objects.
+        """
         return (isinstance(other, ParFor) and self.dimension == other.dimension
                 and self.start == other.start and self.end == other.end)
 
@@ -46,7 +52,10 @@ class Store(MappingElement):
         self.buffer = buffer
         self.data = set(data)
 
-    def __eq__(self, other):
+    def __eq__(self, other:Any) -> bool:
+        """
+        Checks for functional but not strict identity between objects.
+        """
         return (isinstance(other, Store) and self.buffer == other.buffer
                 and self.data == other.data)
 
@@ -73,11 +82,40 @@ class Mapping:
         return '\n'.join(map(lambda e: e.__str__(), self.elements))
 
 class MappingDiff:
-    def __init__(self, ):
-        raise NotImplementedError()
+    def __init__(self, m1:Mapping, m2:Mapping):
+        # first mapping (original)
+        self.m1:Mapping = m1
+        # second mapping (different)
+        self.m2:Mapping = m2
+        # tracks the differences between the two
+        self.differences:list[bool] = list()
+
+        """
+        Identifies the differing elements between the two through iterating through map elements
+        """
+        # for now assume they're of equal length
+        assert len(m1) == len(m2)
+        for i in range(len(m1)):
+            # if they're not equal, mark in differences that they're not equal
+            if m1.elements[i] != m2.elements[i]:
+                self.differences.append(True)
+            else:
+                self.differences.append(False)
+
+
 
     def __str__(self) -> str:
-        raise NotImplementedError()
+        string:str = ""
+        for i in range(len(self.m1.elements)):
+            if self.differences[i]:
+                # highlights the differences between the two
+                string += Fore.RED + str(self.m1.elements[i]) + '\t\t\t' + str(self.m2.elements[i]) 
+                # resets highlighting before new elem, newlines before next elem
+                string += Fore.RESET + '\n'
+            else:
+                string += str(self.m1.elements[i]) + '\t\t\t' + str(self.m2.elements[i]) + '\n'
+        
+        return string
 
 def mapping_diff(mapping1: Mapping, mapping2: Mapping) -> MappingDiff:
     """
@@ -121,6 +159,7 @@ if __name__ == '__main__':
     ])
 
     print(mapping)
+    print("######")
 
     other_mapping = Mapping([
         Store('L2', {'A', 'B', 'Z'}),
@@ -137,4 +176,4 @@ if __name__ == '__main__':
         For('k', 0, 1)
     ])
 
-    print(mapping_diff(mapping, other_mapping))
+    print(MappingDiff(mapping, other_mapping))

@@ -132,8 +132,7 @@ class MappingDiff:
 
             # if elems not equal, mark in differences that they're not equal
             if e1 != e2:
-                self.differences.append(True)
-                MappingDiff.Diff(e1, e2)
+                self.differences.append(MappingDiff.Diff(e1, e2))
             else:
                 self.differences.append(False)
 
@@ -144,9 +143,9 @@ class MappingDiff:
         for i in range(len(self.m1.elements)):
             if self.differences[i]:
                 # highlights the differences between the two, https://docs.python.org/3/library/string.html#formatstrings
-                string += f"{Fore.RED}{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m1.elements[i])[0:print_width]:{print_width}s}{Fore.RESET}\n"
+                string += f"{Fore.RED}{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m2.elements[i])[0:print_width]:{print_width}s}{Fore.RESET}\n"
             else:
-                string += f"{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m1.elements[i])[0:print_width]:{print_width}s}\n"
+                string += f"{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m2.elements[i])[0:print_width]:{print_width}s}\n"
         
         return string
 

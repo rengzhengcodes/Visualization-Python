@@ -118,13 +118,6 @@ class MappingDiff:
         
         return string
 
-def mapping_diff(mapping1: Mapping, mapping2: Mapping) -> MappingDiff:
-    """
-    Based on the LCS algorithm:
-    https://en.wikipedia.org/wiki/Longest_common_subsequence
-    """
-    raise NotImplementedError()
-
 if __name__ == '__main__':
     # A Simple Example
     # 

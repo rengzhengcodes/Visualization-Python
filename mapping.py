@@ -85,6 +85,33 @@ class Mapping:
         return '\n'.join(map(lambda e: e.__str__(), self.elements))
 
 class MappingDiff:
+    class Diff:
+        def __init__(self, e1:MappingElement, e2:MappingElement):
+            assert type(e1) == type(e2)
+            # first mapping element (original)
+            self.e1:MappingElement = e1
+            # second mapping element (different)
+            self.e2:MappingElement = e2
+            # differences between the two. Uses a dictionary as we don't know what mapping elements are being entered
+            self.differences:dict[str:bool] = dict()
+
+            """
+            Iterates through all the mapping variables to spot the differences.
+            """
+            # pulls out the specific dictionaries representing variables for each element
+            v1:dict = vars(e1)
+            v2:dict = vars(e2)
+            
+            # makes sure the two have equal keys
+            assert v1.keys() == v2.keys()
+
+            for var in v1.keys():
+                # sets the variables to if they correspond
+                self.differences[var] = v1[var] != v2[var]
+        
+        def __str__(self):
+            raise NotImplementedError("Coming soon.")
+
     def __init__(self, m1:Mapping, m2:Mapping):
         # first mapping (original)
         self.m1:Mapping = m1
@@ -99,9 +126,14 @@ class MappingDiff:
         # for now assume they're of equal length
         assert len(m1) == len(m2)
         for i in range(len(m1)):
-            # if they're not equal, mark in differences that they're not equal
-            if m1.elements[i] != m2.elements[i]:
+            # pulls out the elements in question for readability of code
+            e1:MappingElement = m1.elements[i]
+            e2:MappingElement = m2.elements[i]
+
+            # if elems not equal, mark in differences that they're not equal
+            if e1 != e2:
                 self.differences.append(True)
+                MappingDiff.Diff(e1, e2)
             else:
                 self.differences.append(False)
 

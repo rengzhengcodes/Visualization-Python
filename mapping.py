@@ -109,9 +109,9 @@ class MappingDiff:
         for i in range(len(self.m1.elements)):
             if self.differences[i]:
                 # highlights the differences between the two, https://docs.python.org/3/library/string.html#formatstrings
-                string += f"{Fore.RED}{self.m1.elements[i]}\t\t\t{self.m1.elements[i]}{Fore.RESET}\n"
+                string += f"{Fore.RED}{self.m1.elements[i]!s:20s} | {self.m1.elements[i]!s:20s}{Fore.RESET}\n"
             else:
-                string += f"{self.m1.elements[i]}\t\t\t{self.m1.elements[i]}\n"
+                string += f"{self.m1.elements[i]!s:20s} | {self.m1.elements[i]!s:20s}\n"
         
         return string
 

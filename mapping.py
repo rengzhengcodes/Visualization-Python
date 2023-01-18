@@ -108,12 +108,10 @@ class MappingDiff:
         string:str = ""
         for i in range(len(self.m1.elements)):
             if self.differences[i]:
-                # highlights the differences between the two
-                string += Fore.RED + str(self.m1.elements[i]) + '\t\t\t' + str(self.m2.elements[i]) 
-                # resets highlighting before new elem, newlines before next elem
-                string += Fore.RESET + '\n'
+                # highlights the differences between the two, https://docs.python.org/3/library/string.html#formatstrings
+                string += f"{Fore.RED}{self.m1.elements[i]}\t\t\t{self.m1.elements[i]}{Fore.RESET}\n"
             else:
-                string += str(self.m1.elements[i]) + '\t\t\t' + str(self.m2.elements[i]) + '\n'
+                string += f"{self.m1.elements[i]}\t\t\t{self.m1.elements[i]}\n"
         
         return string
 

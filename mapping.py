@@ -1,24 +1,30 @@
 from __future__ import annotations
-from typing import Iterable, Set
+from typing import Iterable, Set, Any
 
 class MappingElement:
     pass
 
 class Loop(MappingElement):
     def __init__(self, dimension: str, start: int, end: int):
-        self.dimension = dimension
-        self.start = start
-        self.end = end
+        # variable name of dimension e.g. I, J, K
+        self.dimension:str = dimension
+        # start of iteration
+        self.start:int = start
+        # end of iteration
+        self.end:int = end
 
 class For(Loop):
     def __init__(self, dimension: str, start: int, end: int):
         super().__init__(dimension, start, end)
 
-    def __eq__(self, other):
+    def __eq__(self, other:Any):
+        """
+        Checks for functional but not strict identity between objects.
+        """
         return (isinstance(other, For) and self.dimension == other.dimension
                 and self.start == other.start and self.end == other.end)
 
-    def pretty_print(self):
+    def __str__(self):
         return f'for {self.dimension} in [{self.start}, {self.end})'
 
 class ParFor(Loop):
@@ -29,7 +35,10 @@ class ParFor(Loop):
         return (isinstance(other, ParFor) and self.dimension == other.dimension
                 and self.start == other.start and self.end == other.end)
 
-    def pretty_print(self):
+    def __str__(self) -> str:
+        """
+        Returns a pretty, printable method for debugging
+        """
         return f'par-for {self.dimension} in [{self.start}, {self.end})'
 
 class Store(MappingElement):
@@ -41,24 +50,33 @@ class Store(MappingElement):
         return (isinstance(other, Store) and self.buffer == other.buffer
                 and self.data == other.data)
 
-    def pretty_print(self):
+    def __str__(self):
+        """
+        Returns a pretty, printable method for debugging
+        """
         return f'{self.buffer} holds {self.data}'
 
 class Mapping:
     def __init__(self, elements: Iterable[MappingElement]):
-        self.elements = list(elements)
+        self.elements:list[MappingElement] = list(elements)
 
     def __len__(self):
+        """
+        Returns the number of elements in a mapping
+        """
         return len(self.elements)
 
-    def pretty_print(self):
-        return '\n'.join(map(lambda e: e.pretty_print(), self.elements))
+    def __str__(self) -> str:
+        """
+        Returns a pretty, printable method for debugging
+        """
+        return '\n'.join(map(lambda e: e.__str__(), self.elements))
 
 class MappingDiff:
-    def __init__(self):
+    def __init__(self, ):
         raise NotImplementedError()
 
-    def pretty_print(self):
+    def __str__(self) -> str:
         raise NotImplementedError()
 
 def mapping_diff(mapping1: Mapping, mapping2: Mapping) -> MappingDiff:
@@ -102,7 +120,7 @@ if __name__ == '__main__':
         For('k', 0, 1)
     ])
 
-    print(mapping.pretty_print())
+    print(mapping)
 
     other_mapping = Mapping([
         Store('L2', {'A', 'B', 'Z'}),

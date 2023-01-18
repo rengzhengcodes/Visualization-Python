@@ -4,6 +4,9 @@ from colorama import Fore
 # type hinting library
 from typing import Iterable, Set, Any
 
+# defines the print width
+print_width:int = 25
+
 class MappingElement:
     pass
 
@@ -109,9 +112,9 @@ class MappingDiff:
         for i in range(len(self.m1.elements)):
             if self.differences[i]:
                 # highlights the differences between the two, https://docs.python.org/3/library/string.html#formatstrings
-                string += f"{Fore.RED}{self.m1.elements[i]!s:20s} | {self.m1.elements[i]!s:20s}{Fore.RESET}\n"
+                string += f"{Fore.RED}{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m1.elements[i])[0:print_width]:{print_width}s}{Fore.RESET}\n"
             else:
-                string += f"{self.m1.elements[i]!s:20s} | {self.m1.elements[i]!s:20s}\n"
+                string += f"{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m1.elements[i])[0:print_width]:{print_width}s}\n"
         
         return string
 

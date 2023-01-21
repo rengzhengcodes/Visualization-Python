@@ -1,5 +1,5 @@
 # gets the classes we constructed
-from visualization.mapping import *
+from mapping import *
 # for typehinting
 from io import TextIOWrapper
 # for finding stuff
@@ -26,7 +26,16 @@ def parse(file:TextIOWrapper) -> list:
             # at the end of the string.
     """
     mapping_texts:list = re.compile("(?:^.*$\n?){4}", re.M).findall(raw)
+    """
+    Splits into separate lines.
+
+    [{dimension},{start},{end};]*  // these are the loops in the mapping (from innermost to outermost)
+    [{storage_level}]*             // these are the storage levels
+    [{bypass_mask}]*               // read from right to left. each one is a dataspace (1 means stored)
+    [{cycles};{energy};]
+    """
+    mapping_texts = [data_str.split('\n') for data_str in mapping_texts]
     return mapping_texts
 
 if __name__ == "__main__":
-    parse(open("testdata.txt"))
+    print(parse(open("testdata.txt")))

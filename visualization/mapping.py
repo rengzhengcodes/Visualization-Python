@@ -4,7 +4,7 @@ from colorama import Fore
 # type hinting library
 from typing import Iterable, Set, Any
 # imports parsing
-from parsing import timeloop
+import parsing
 
 # defines the print width
 print_width:int = 25

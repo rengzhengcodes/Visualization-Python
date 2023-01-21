@@ -1,9 +1,3 @@
-# allows import of super module
-import sys
-from os.path import dirname
-parent_dir:str = dirname(dirname(dirname(__file__)))
-print(parent_dir)
-sys.path.append(parent_dir)
 # gets the classes we constructed
 from visualization.mapping import *
 # for typehinting

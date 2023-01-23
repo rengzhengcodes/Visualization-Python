@@ -106,7 +106,7 @@ class Mapping:
         """
         Returns a pretty, printable method for debugging
         """
-        return '\n'.join(map(lambda e: e.__str__(), self.elements))
+        return '\n'.join(map(lambda e: str(e), self.elements))
     
     def __repr__(self) -> str:
         return str(self)

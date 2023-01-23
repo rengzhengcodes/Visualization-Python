@@ -62,9 +62,15 @@ class ParFor(Loop):
         return f'par-for {self.dimension} in [{self.start}, {self.end})'
 
 class Store(MappingElement):
-    def __init__(self, buffer: str, data: Set[str]):
-        self.buffer = buffer
+    def __init__(self, buffer: int, data: Set[str]):
+        # buffer level
+        self.buffer:int = buffer
+        # contained data
         self.data = set(data)
+
+    """
+    Comparison operators defined below
+    """
 
     def __eq__(self, other:Any) -> bool:
         """
@@ -73,11 +79,18 @@ class Store(MappingElement):
         return (isinstance(other, Store) and self.buffer == other.buffer
                 and self.data == other.data)
 
+    def __lt__(self, other:Store) -> bool:
+        """
+        Checks if self is less than other.
+        """
+        assert isinstance(other, Store)
+        return self.buffer < other.buffer
+
     def __str__(self):
         """
         Returns a pretty, printable method for debugging
         """
-        return f'{self.buffer} holds {self.data}'
+        return f'L{self.buffer} holds {self.data}'
 
 class Mapping:
     def __init__(self, elements: Iterable[MappingElement]):
@@ -94,6 +107,9 @@ class Mapping:
         Returns a pretty, printable method for debugging
         """
         return '\n'.join(map(lambda e: e.__str__(), self.elements))
+    
+    def __repr__(self) -> str:
+        return str(self)
 
 class MappingDiff:
     class Diff:
@@ -180,15 +196,15 @@ if __name__ == '__main__':
     # for k in [0,1)
 
     mapping = Mapping([
-        Store('L2', {'A', 'B', 'Z'}),
+        Store(2, {'A', 'B', 'Z'}),
         For('m', 0, 4),
         For('k', 0, 2),
         For('n', 0, 4),
-        Store('L1', {'A', 'B', 'Z'}),
+        Store(1, {'A', 'B', 'Z'}),
         For('m', 0, 4),
         For('n', 0, 4),
         ParFor('k', 0, 8),
-        Store('L0', {'A', 'B', 'Z'}),
+        Store(0, {'A', 'B', 'Z'}),
         For('m', 0, 1),
         For('n', 0, 1),
         For('k', 0, 1)
@@ -198,15 +214,15 @@ if __name__ == '__main__':
     print("######")
 
     other_mapping = Mapping([
-        Store('L2', {'A', 'B', 'Z'}),
+        Store(2, {'A', 'B', 'Z'}),
         For('k', 0, 2),
         For('m', 0, 4),
         For('n', 0, 4),
-        Store('L1', {'A', 'B', 'Z'}),
+        Store(1, {'A', 'B', 'Z'}),
         For('m', 0, 4),
         For('n', 0, 4),
         ParFor('k', 0, 8),
-        Store('L0', {'A', 'B', 'Z'}),
+        Store(0, {'A', 'B', 'Z'}),
         For('m', 0, 1),
         For('n', 0, 1),
         For('k', 0, 1)

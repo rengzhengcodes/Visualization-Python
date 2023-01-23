@@ -33,7 +33,16 @@ class For(Loop):
                 and self.start == other.start and self.end == other.end)
 
     def __str__(self):
+        """
+        Returns a pretty print string for debugging.
+        """
         return f'for {self.dimension} in [{self.start}, {self.end})'
+
+    def __repr__(self):
+        """
+        Functional representation. Currently set to __str__
+        """
+        return str(self)
 
 class ParFor(Loop):
     def __init__(self, dimension: str, start: int, end: int):

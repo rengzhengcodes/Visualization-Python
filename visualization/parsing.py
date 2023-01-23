@@ -41,16 +41,20 @@ def parse(file:TextIOWrapper) -> list:
                             for data_str in mapping_texts     
                     ]
 
-    dim_info:str
+    # stores all the mappings
+    mappings:list = list()
+
+    loop_info:str
     storage_levels:str
     bypass_masks:str
     data:str
-    for [dim_info, storage_levels, bypass_masks, data] in mapping_texts:
-        print(dim_info.split(';'))
-        # converts the dim_info into a list containing the loops
-        dim_info:list = [
+    for [loop_info, storage_levels, bypass_masks, data] in mapping_texts:
+        # stores the master mapping structure
+        mapping:list = list()
+        # converts the loop_info into a list containing the loops
+        loop_info:list = [
                             For(dim, int(start), int(end))
-                                for loop in dim_info.split(';') # if we leaving the trailing ; it will split a blank
+                                for loop in loop_info.split(';') # if we leaving the trailing ; it will split a blank
                                     for [dim, start, end] in [loop.split(',')] # converts to list as split doesn't return a list, just an iterable
                         ]
         # TODO:: implement storage level descriptors to dims
@@ -60,6 +64,6 @@ def parse(file:TextIOWrapper) -> list:
         # extracts performance information. TODO::store performance information in mapping
         data:list = [float(info) for info in data.split(';')]
 
-    return 1 
+    return mappings
 if __name__ == "__main__":
     print(parse(open("testdata.txt")))

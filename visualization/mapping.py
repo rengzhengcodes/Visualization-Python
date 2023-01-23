@@ -1,10 +1,9 @@
+# postponed type hinting
 from __future__ import annotations
 # for coloring differences in terminal
 from colorama import Fore
 # type hinting library
 from typing import Iterable, Set, Any
-# imports parsing
-import parsing
 
 # defines the print width
 print_width:int = 25
@@ -163,8 +162,6 @@ class MappingDiff:
             else:
                 self.differences.append(False)
 
-
-
     def __str__(self) -> str:
         string:str = ""
         for i in range(len(self.m1.elements)):
@@ -173,6 +170,20 @@ class MappingDiff:
                 string += f"{Fore.RED}{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m2.elements[i])[0:print_width]:{print_width}s}{Fore.RESET}\n"
             else:
                 string += f"{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m2.elements[i])[0:print_width]:{print_width}s}\n"
+        
+        return string
+    
+    def html(self) -> str:
+        """
+        Returns an HTML renderable version of __str__
+        """
+        string:str = ""
+        for i in range(len(self.m1.elements)):
+            if self.differences[i]:
+                # highlights the differences between the two, https://docs.python.org/3/library/string.html#formatstrings
+                string += fr"<RED>{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m2.elements[i])[0:print_width]:{print_width}s}<\RED><\br>"
+            else:
+                string += fr"{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m2.elements[i])[0:print_width]:{print_width}s}<\br>"
         
         return string
 
@@ -228,4 +239,26 @@ if __name__ == '__main__':
         For('k', 0, 1)
     ])
 
-    print(MappingDiff(mapping, other_mapping))
+    diff:MappingDiff = MappingDiff(mapping, other_mapping)
+    print(diff)
+
+    # visualization libraries
+    from dash import Dash, html, dcc
+    import plotly.express as px
+    import pandas as pd
+    # python string to html conversion
+    from html import escape
+    
+    # diff string representation
+    diff_str:str = diff.html()
+
+    app:Dash = Dash(__name__)
+
+    app.layout:html.Div = html.Div(
+        children=[
+            html.H1(children="Test"),
+            html.Div(children='test')
+        ]
+    )
+
+    app.run_server(debug=True)

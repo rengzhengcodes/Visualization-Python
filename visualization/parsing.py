@@ -51,19 +51,31 @@ def parse(file:TextIOWrapper) -> list:
     for [loop_info, storage_levels, bypass_masks, data] in mapping_texts:
         # stores the master mapping structure
         mapping:list = list()
-        # converts the loop_info into a list containing the loops
-        loop_info:list = [
-                            For(dim, int(start), int(end))
-                                for loop in loop_info.split(';') # if we leaving the trailing ; it will split a blank
-                                    for [dim, start, end] in [loop.split(',')] # converts to list as split doesn't return a list, just an iterable
-                        ]
-        # TODO:: implement storage level descriptors to dims
-        storage_levels:list = [int(level) for level in storage_levels.split(';')]
+
+        # converts the loop_info into the loops and dumps them in mapping.
+        for loop in loop_info.split(';'):
+            for dim, start, end in [loop.split(',')]:
+                mapping.append(For(dim, int(start), int(end)))
+        
+        # gets the indicies of the loops the levels refer to
+        storage_levels:list[int] = [int(level) for level in storage_levels.split(';')]
+        # creates corresponding level curves and inserts them into the correct position
+        for Lval in range(len(storage_levels) -1, -1, -1):
+            mapping.insert(
+                storage_levels[Lval],
+                Store(Lval, {'A', 'B', 'Z'}) # don't know what dataspace it stores yet
+            )
+            
         # bypass masks, read left to right TODO::implement bypass descriptors
         bypass_masks = [mask[::-1] for mask in bypass_masks] # reverses direction so indicies line up 
         # extracts performance information. TODO::store performance information in mapping
         data:list = [float(info) for info in data.split(';')]
 
+        mappings.append(Mapping(mapping))
+
     return mappings
+
 if __name__ == "__main__":
-    print(parse(open("testdata.txt")))
+    for mapping in parse(open("testdata.txt")):
+        print(mapping)
+        print()

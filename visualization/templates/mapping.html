@@ -36,7 +36,7 @@
                 {# iterates between the two mappings, as the behavior is the same for both #}
                 {% for part in parts %}
                     <!-- Container for One Line of One Mapping -->
-                    <div class="cell medium-6">
+                    <div class="cell medium-6 mapping_line">
                         {# isolates components that are meant to be red #}
                         {% for phrase in part.split(Fore.RED) %}
                             {# assumes there's a correct pairng of Fore.RED for every Fore.RESET, 

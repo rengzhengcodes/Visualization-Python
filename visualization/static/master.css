@@ -6,8 +6,10 @@ span.diff {
 }
 
 /* mapping format */
-.mapping {
+.mapping_line {
     padding:0;
+    font-family: monospace;
+    font-size: large;
 }
 /* removes bottom margin */
 .mapping p {

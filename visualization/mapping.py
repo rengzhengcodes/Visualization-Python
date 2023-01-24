@@ -1,9 +1,6 @@
 # imports module classes
 from __init__ import *
 
-# defines the print width
-print_width:int = 25
-
 # visualization libraries
 from flask import Flask, render_template
 import plotly.express as px
@@ -12,10 +9,11 @@ import pandas as pd
 from html import escape
 
 app:Flask = Flask(__name__)
-app.run(debug=True)
 
-if __name__ == '__main__':
-    # A Simple Example
+# landing page, serves as example graphical page for now
+@app.route('/')
+def graph():
+        # A Simple Example
     # 
     # Matrix multiplication: Z[m,n] := A[m,k] B[k,n]
     #
@@ -69,3 +67,13 @@ if __name__ == '__main__':
     diff:MappingDiff = MappingDiff(mapping, other_mapping)
     print(diff)
     
+    return render_template(
+        "mapping.html",
+        Fore = Fore,
+        mapping_1 = repr(diff),
+        example_2 = "test2"
+    )
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

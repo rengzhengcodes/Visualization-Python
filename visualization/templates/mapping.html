@@ -34,9 +34,9 @@
                             {# assumes there's a correct pairng of Fore.RED for every Fore.RESET #}
                             {% if Fore.RESET in phrase %}
                                 {% set diff, same = phrase.split(Fore.RESET) %}
-                                <span class="diff">{{ diff }}</span>{{ same }}
+                                <span class="pre diff">{{ diff }}</span>{{ same }}
                             {% else %}
-                                {{ phrase }}
+                                <span class="pre">{{ phrase }}</span>
                             {% endif %}
                         {% endfor %}
                     </div>

@@ -13,3 +13,8 @@ span.diff {
 .mapping p {
     margin:0;
 }
+
+/* takes indentation from the python string */
+span.pre {
+    white-space:pre;
+}

@@ -70,7 +70,7 @@ def graph():
     return render_template(
         "mapping.html",
         Fore = Fore,
-        mapping_1 = repr(diff),
+        mapping_1 = str(diff),
         example_2 = "test2"
     )
 

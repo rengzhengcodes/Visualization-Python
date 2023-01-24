@@ -17,7 +17,7 @@
             {% for line in mapping_1.split('\n') %}
                 {% if Fore.RED in line %}
                     {{ line.replace(Fore.RED, '').replace(Fore.RESET, '') }}
-                    <p style="color:red">{{ line }}</p>
+                    <p style="color:red"> {{ line }} </p>
                 {% else %}
                     {{ line }}
                 {% endif %}

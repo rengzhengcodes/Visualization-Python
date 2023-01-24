@@ -19,7 +19,7 @@
 <body>
     <div class="grid-x mapping">
         <div class="cell medium-2"></div>
-        <pre class="cell medium-8 grid-x">
+        <div class="cell medium-8 grid-x">
             <h1 class="cell medium-6">Mapping 1</h1>
             <h1 class="cell medium-6">Mapping 2</h1>
             {# goes through all the lines in diff #}
@@ -28,23 +28,35 @@
                 {% set line = line.replace('  ', '\t') %}
                 {# splits the line #}
                 {% set line1, line2 = line.split('|') %}
+                <div class="cell medium-6">
                 {% if Fore.RED in line %}
-                    <p class="diff medium-6"> {{ 
-                        line1.replace(Fore.RED, '').rstrip()
-                    }} </p>
-                    <p class="diff medium-6"> {{ 
-                        line2.replace(Fore.RESET, '').rstrip()
-                    }} </p>
+                    {% for char in line1 %}
+                        {% if char == Fore.RED %}
+                            <p class="diff">
+                        {% elif char == Fore.RESET %}
+                            </p>
+                        {% else %}
+                            {{ char }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="cell medium-6">
+                    {% for char in line2 %}
+                        {% if char == Fore.RED %}
+                            <span class="diff">
+                        {% elif char == Fore.RESET %}
+                            </span>
+                        {% else %}
+                            {{ char }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
                 {% else %}
-                    <p class="medium-6"> {{ 
-                        line1.replace(Fore.RED, '').rstrip()
-                    }} </p>
-                    <p class="medium-6"> {{ 
-                        line2.replace(Fore.RESET, '').rstrip()
-                    }} </p>
+                    <div class="cell medium-6">{{ line1 }}</div>
+                    <div class="cell medium-6">{{ line2 }}</div>
                 {% endif %}
             {% endfor %}
-        </pre>
+        </div>
         <div class="cell medium-2"></div>
     </div>
 </body>

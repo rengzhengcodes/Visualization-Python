@@ -1,6 +1,8 @@
 /* marks difference between the two mappings */
 p.diff {
     color:red;
+    margin:0;
+    padding:0;
 }
 
 /* mapping format */

@@ -42,6 +42,27 @@ class For(Loop):
         Functional representation. Currently set to __str__
         """
         return str(self)
+    
+    def diffstring(self, diff:MappingDiff.Diff):
+        """
+        diff:MappingDiff.Diff
+            A diff object between this instance and another same class instance
+        """
+        # type check
+        assert isinstance(diff, MappingDiff.Diff)
+        # diff contains self check
+        assert self in vars(diff).values()
+        # differences tracked
+        diffs:dict = diff.differences
+        
+        # converts differences into the appropriate color tags
+        for var in diffs:
+            if diffs[var]:
+                diffs[var]:str = Fore.RED
+            else:
+                diffs[var]:str = ''
+        
+        return f"""for {diff.wrap(self.dimension, diffs["dimension"])} in [{diff.wrap(self.start, diffs["start"])}, {diff.wrap(self.end, diffs["end"])})"""
 
 class ParFor(Loop):
     def __init__(self, dimension: str, start: int, end: int):
@@ -112,7 +133,7 @@ class Mapping:
 
 class MappingDiff:
     class Diff:
-        def __init__(self, e1:MappingElement, e2:MappingElement):
+        def __init__(self, e1:MappingElement, e2:MappingElement) -> None:
             assert type(e1) == type(e2)
             # first mapping element (original)
             self.e1:MappingElement = e1
@@ -135,8 +156,20 @@ class MappingDiff:
                 # sets the variables to if they correspond
                 self.differences[var] = v1[var] != v2[var]
         
-        def __str__(self):
-            raise NotImplementedError("Coming soon.")
+        def __str__(self) -> str:
+            return self.e1.diffstring(self) + '|' + self.e2.diffstring(self)
+        
+        def wrap(self, obj:Any, tag:str):
+            """
+            obj:Any
+                Any object that wishes to be highlighted.
+            tag:str
+                The colorama color tag to wrap them in
+            
+            returns:
+                Terminal highlighted string around that element
+            """
+            return f"{tag}{obj}{Fore.RESET}"
 
     def __init__(self, m1:Mapping, m2:Mapping):
         # first mapping (original)
@@ -174,10 +207,10 @@ class MappingDiff:
             # checks if a difference exists
             if self.differences[i]:
                 # highlights the differences between the two, https://docs.python.org/3/library/string.html#formatstrings
+                diff1, diff2 = str(self.differences[i]).split('|')
                 string += (
-                    Fore.RED + 
-                    f"{(fillchar*indent_level + str(self.m1.elements[i]))[0:print_width]:{print_width}s}" + "|" + 
-                    f"{(fillchar*indent_level + str(self.m2.elements[i]))[0:print_width]:{print_width}s}" + f"{Fore.RESET}\n"
+                    f"{(fillchar*indent_level + diff1)[0:print_width]:{print_width}s}" + "|" + 
+                    f"{(fillchar*indent_level + diff2)[0:print_width]:{print_width}s}\n"
                 )
             else:
                 string += (

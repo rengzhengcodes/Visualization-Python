@@ -28,19 +28,19 @@
                 {% set line = line.replace('  ', '\t') %}
                 {# splits the line #}
                 {% set line1, line2 = line.split('|') %}
-                <div class="cell medium-6">
                 {% if Fore.RED in line %}
+                <div class="cell medium-6 tag1">
                     {% for char in line1 %}
                         {% if char == Fore.RED %}
-                            <p class="diff">
+                            <span class="diff">
                         {% elif char == Fore.RESET %}
-                            </p>
+                            </span>
                         {% else %}
                             {{ char }}
                         {% endif %}
                     {% endfor %}
                 </div>
-                <div class="cell medium-6">
+                <div class="cell medium-6 tag2">
                     {% for char in line2 %}
                         {% if char == Fore.RED %}
                             <span class="diff">
@@ -52,8 +52,8 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                    <div class="cell medium-6">{{ line1 }}</div>
-                    <div class="cell medium-6">{{ line2 }}</div>
+                    <div class="cell medium-6 tag3">{{ line1 }}</div>
+                    <div class="cell medium-6 tag4">{{ line2 }}</div>
                 {% endif %}
             {% endfor %}
         </div>

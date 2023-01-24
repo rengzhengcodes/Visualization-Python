@@ -25,36 +25,22 @@
             {# goes through all the lines in diff #}
             {% for line in diff.split('\n') %}
                 {# replaces leading with tabs #}
-                {% set line = line.replace('  ', '\t') %}
+                {% set line = line.replace('  ', '  ') %}
                 {# splits the line #}
-                {% set line1, line2 = line.split('|') %}
-                {% if Fore.RED in line %}
-                <div class="cell medium-6 tag1">
-                    {% for char in line1 %}
-                        {% if char == Fore.RED %}
-                            <span class="diff">
-                        {% elif char == Fore.RESET %}
-                            </span>
-                        {% else %}
-                            {{ char }}
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <div class="cell medium-6 tag2">
-                    {% for char in line2 %}
-                        {% if char == Fore.RED %}
-                            <span class="diff">
-                        {% elif char == Fore.RESET %}
-                            </span>
-                        {% else %}
-                            {{ char }}
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                {% else %}
-                    <div class="cell medium-6 tag3">{{ line1 }}</div>
-                    <div class="cell medium-6 tag4">{{ line2 }}</div>
-                {% endif %}
+                {% set parts = line.split('|') %}
+                {% for part in parts %}
+                    <div class="cell medium-6 tag1">
+                        {% for phrase in part.split(Fore.RED) %}
+                            {# assumes there's a correct pairng of Fore.RED for every Fore.RESET #}
+                            {% if Fore.RESET in phrase %}
+                                {% set diff, same = phrase.split(Fore.RESET) %}
+                                <span class="diff">{{ diff }}</span>{{ same }}
+                            {% else %}
+                                {{ phrase }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
             {% endfor %}
         </div>
         <div class="cell medium-2"></div>

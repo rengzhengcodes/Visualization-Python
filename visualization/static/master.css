@@ -1,5 +1,5 @@
 /* marks difference between the two mappings */
-p.diff {
+span.diff {
     color:red;
     margin:0;
     padding:0;

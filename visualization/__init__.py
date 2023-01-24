@@ -169,7 +169,11 @@ class MappingDiff:
             returns:
                 Terminal highlighted string around that element
             """
-            return f"{tag}{obj}{Fore.RESET}"
+            # if there is a tag
+            if tag:
+                return f"{tag}{obj}{Fore.RESET}"
+            else:
+                return f"{obj}"
 
     def __init__(self, m1:Mapping, m2:Mapping):
         # first mapping (original)

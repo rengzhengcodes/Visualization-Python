@@ -18,24 +18,36 @@
 </head>
 <body>
     <div class="grid-x mapping">
+        <!-- Side Padding to Center Data in Screen -->
         <div class="cell medium-2"></div>
+        <!-- Main Container Holding the Data -->
         <div class="cell medium-8 grid-x">
+            <!-- The Format Alternates Betweens Lines/Elements for Mapping 1 and Mapping 2. When the Screen is in a Small Form 
+            Factor the Two are Instead Displayed On Top of One Another -->
             <h1 class="cell medium-6">Mapping 1</h1>
             <h1 class="cell medium-6">Mapping 2</h1>
             {# goes through all the lines in diff #}
             {% for line in diff.split('\n') %}
-                {# replaces leading with tabs #}
+                {# replaces leading two-dent with preferred whitespace fill #}
                 {% set line = line.replace('  ', '  ') %}
-                {# splits the line #}
+                {# splits the line into the two mappings contained within #}
                 {% set parts = line.split('|') %}
+                
+                {# iterates between the two mappings, as the behavior is the same for both #}
                 {% for part in parts %}
-                    <div class="cell medium-6 tag1">
+                    <!-- Container for One Line of One Mapping -->
+                    <div class="cell medium-6">
+                        {# isolates components that are meant to be red #}
                         {% for phrase in part.split(Fore.RED) %}
-                            {# assumes there's a correct pairng of Fore.RED for every Fore.RESET #}
+                            {# assumes there's a correct pairng of Fore.RED for every Fore.RESET, 
+                            so uses Fore.RESET to see if a part of a phrase is a diff (i.e. needs to be RED) #}
                             {% if Fore.RESET in phrase %}
+                                {#  splits the diff (RED) part from the same (not RED) part #}
                                 {% set diff, same = phrase.split(Fore.RESET) %}
+                                <!-- Puts Diff in Special Diff Container and Same Outside That Container -->
                                 <span class="pre diff">{{ diff }}</span>{{ same }}
                             {% else %}
+                                <!-- This Container is Purely For the Leading Fill Characters Being Displayed -->
                                 <span class="pre">{{ phrase }}</span>
                             {% endif %}
                         {% endfor %}
@@ -43,6 +55,7 @@
                 {% endfor %}
             {% endfor %}
         </div>
+        <!-- Side Padding to Center Data in Screen -->
         <div class="cell medium-2"></div>
     </div>
 </body>

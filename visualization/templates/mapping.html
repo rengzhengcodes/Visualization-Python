@@ -9,22 +9,30 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.5/dist/css/foundation.min.css" crossorigin="anonymous">
     <!-- Compressed JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.5/dist/js/foundation.min.js" crossorigin="anonymous"></script>
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='master.css') }}"
+    />
     <title>Mapping</title>
 </head>
 <body>
-    <div class="grid-x grid-padding-x">
-        <div class="cell medium-6">
+    <div class="grid-x">
+        <div class="cell medium-2"></div>
+        <div class="cell medium-4">
             {% for line in mapping_1.split('\n') %}
                 {% if Fore.RED in line %}
-                    {{ line.replace(Fore.RED, '').replace(Fore.RESET, '') }}
-                    <p style="color:red"> {{ line }} </p>
+                    <p class="diff"> {{ 
+                        line.replace(Fore.RED, '').replace(Fore.RESET, '').rstrip()
+                    }} </p>
                 {% else %}
                     {{ line }}
                 {% endif %}
                 <br/>
             {% endfor %}
         </div>
-        <div class="cell medium-6">{{ example_2 }}</div>
+        <div class="cell medium-4">{{ example_2 }}</div>
+        <div class="cell medium-2"></div>
     </div>
 </body>
 </html>

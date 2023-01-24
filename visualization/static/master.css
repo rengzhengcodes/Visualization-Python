@@ -1,22 +1,32 @@
 /* marks difference between the two mappings */
 span.diff {
+    /* color stuff */
     color:red;
+
+    /* whitespace stuff */
     margin:0;
     padding:0;
 }
 
 /* mapping format */
 .mapping_line {
-    padding:0;
+    /* font stuff */
     font-family: monospace;
-    font-size: large;
-}
-/* removes bottom margin */
-.mapping p {
+    /* keeps span from having space between them */
+    font-size: 0;
+
+    /* whitespace stuff */
     margin:0;
+    padding:0;
+}
+.mapping_line > span {
+    /* makes font not 0 for actual content */
+    font-size: large;
 }
 
 /* takes indentation from the python string */
 span.pre {
     white-space:pre;
+    margin:0;
+    padding:0;
 }

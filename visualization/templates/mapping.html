@@ -17,7 +17,7 @@
     <title>Mapping</title>
 </head>
 <body>
-    <div class="grid-x mapping">
+    <div class="grid-x">
         <!-- Side Padding to Center Data in Screen -->
         <div class="cell medium-2"></div>
         <!-- Main Container Holding the Data -->
@@ -45,7 +45,7 @@
                                 {#  splits the diff (RED) part from the same (not RED) part #}
                                 {% set diff, same = phrase.split(Fore.RESET) %}
                                 <!-- Puts Diff in Special Diff Container and Same Outside That Container -->
-                                <span class="pre diff">{{ diff }}</span>{{ same }}
+                                <span class="pre diff">{{ diff }}</span><span>{{ same }}</span>
                             {% else %}
                                 <!-- This Container is Purely For the Leading Fill Characters Being Displayed -->
                                 <span class="pre">{{ phrase }}</span>

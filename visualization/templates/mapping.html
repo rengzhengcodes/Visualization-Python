@@ -17,21 +17,34 @@
     <title>Mapping</title>
 </head>
 <body>
-    <div class="grid-x">
+    <div class="grid-x mapping">
         <div class="cell medium-2"></div>
-        <div class="cell medium-4">
-            {% for line in mapping_1.split('\n') %}
+        <pre class="cell medium-8 grid-x">
+            <h1 class="cell medium-6">Mapping 1</h1>
+            <h1 class="cell medium-6">Mapping 2</h1>
+            {# goes through all the lines in diff #}
+            {% for line in diff.split('\n') %}
+                {# replaces leading with tabs #}
+                {% set line = line.replace('  ', '\t') %}
+                {# splits the line #}
+                {% set line1, line2 = line.split('|') %}
                 {% if Fore.RED in line %}
-                    <p class="diff"> {{ 
-                        line.replace(Fore.RED, '').replace(Fore.RESET, '').rstrip()
+                    <p class="diff medium-6"> {{ 
+                        line1.replace(Fore.RED, '').rstrip()
+                    }} </p>
+                    <p class="diff medium-6"> {{ 
+                        line2.replace(Fore.RESET, '').rstrip()
                     }} </p>
                 {% else %}
-                    {{ line }}
+                    <p class="medium-6"> {{ 
+                        line1.replace(Fore.RED, '').rstrip()
+                    }} </p>
+                    <p class="medium-6"> {{ 
+                        line2.replace(Fore.RESET, '').rstrip()
+                    }} </p>
                 {% endif %}
-                <br/>
             {% endfor %}
-        </div>
-        <div class="cell medium-4">{{ example_2 }}</div>
+        </pre>
         <div class="cell medium-2"></div>
     </div>
 </body>

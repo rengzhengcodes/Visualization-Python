@@ -1,4 +1,13 @@
-/* makes something red */
+/* marks difference between the two mappings */
 p.diff {
-    color:red
+    color:red;
+}
+
+/* mapping format */
+.mapping {
+    padding:0;
+}
+/* removes bottom margin */
+.mapping p {
+    margin:0;
 }

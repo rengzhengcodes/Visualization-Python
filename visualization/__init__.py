@@ -6,7 +6,7 @@ from colorama import Fore
 from typing import Iterable, Set, Any
 
 # defines the print width
-print_width:int = 25
+print_width:int = 50
 
 class MappingElement:
     pass
@@ -164,11 +164,28 @@ class MappingDiff:
 
     def __str__(self) -> str:
         string:str = ""
+        # keeps track of the indentation level
+        indent_level:int = 0
+        # The char used to fill for indent
+        fillchar:str = '  '
+
+        # assembles string
         for i in range(len(self.m1.elements)):
+            # checks if a difference exists
             if self.differences[i]:
                 # highlights the differences between the two, https://docs.python.org/3/library/string.html#formatstrings
-                string += f"{Fore.RED}{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m2.elements[i])[0:print_width]:{print_width}s}{Fore.RESET}\n"
+                string += (
+                    Fore.RED + 
+                    f"{(fillchar*indent_level + str(self.m1.elements[i]))[0:print_width]:{print_width}s}" + "|" + 
+                    f"{(fillchar*indent_level + str(self.m2.elements[i]))[0:print_width]:{print_width}s}" + f"{Fore.RESET}\n"
+                )
             else:
-                string += f"{str(self.m1.elements[i])[0:print_width]:{print_width}s} | {str(self.m2.elements[i])[0:print_width]:{print_width}s}\n"
-        
-        return string
+                string += (
+                        f"{(fillchar*indent_level + str(self.m1.elements[i]))[0:print_width]:{print_width}s}" + "|" + 
+                        f"{(fillchar*indent_level + str(self.m2.elements[i]))[0:print_width]:{print_width}s}\n"
+                    )
+            # if it's a store, increase indentation by 1
+            if isinstance(self.m1.elements[i], Store):
+                indent_level += 1
+
+        return string.rstrip()

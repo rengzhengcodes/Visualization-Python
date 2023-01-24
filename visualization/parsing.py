@@ -1,5 +1,5 @@
 # gets the classes we constructed
-from mapping import *
+from __init__ import *
 # for typehinting
 from io import TextIOWrapper
 # for finding stuff

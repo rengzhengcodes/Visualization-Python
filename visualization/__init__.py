@@ -43,26 +43,16 @@ class For(Loop):
         """
         return str(self)
     
-    def diffstring(self, diff:MappingDiff.Diff):
+    def diffstring(self, diff:MappingDiff.Diff) -> str:
         """
         diff:MappingDiff.Diff
             A diff object between this instance and another same class instance
+            
+        returns:
+            str highlighting the differences
         """
-        # type check
-        assert isinstance(diff, MappingDiff.Diff)
-        # diff contains self check
-        assert self in vars(diff).values()
-        # differences tracked
-        diffs:dict = diff.differences
-        
-        # converts differences into the appropriate color tags
-        for var in diffs:
-            if diffs[var]:
-                diffs[var]:str = Fore.RED
-            else:
-                diffs[var]:str = ''
-        
-        return f"""for {diff.wrap(self.dimension, diffs["dimension"])} in [{diff.wrap(self.start, diffs["start"])}, {diff.wrap(self.end, diffs["end"])})"""
+        # wraps the color
+        return f"""for {diff.wrap(self.dimension, "dimension")} in [{diff.wrap(self.start, "start")}, {diff.wrap(self.end, "end")})"""
 
 class ParFor(Loop):
     def __init__(self, dimension: str, start: int, end: int):
@@ -82,11 +72,16 @@ class ParFor(Loop):
         return f'par-for {self.dimension} in [{self.start}, {self.end})'
 
 class Store(MappingElement):
-    def __init__(self, buffer: int, data: Set[str]):
+    def __init__(self, buffer: int, data: Set[str], bypass:str = '0' * 32):
         # buffer level
         self.buffer:int = buffer
         # contained data
-        self.data = set(data)
+        self.data:list = list(data)
+
+        # modifies the contained data to remove the bypasses. Reads bypass left to right
+        for i in range(len(bypass)):
+            if bypass[i] == '1':
+                self.data.pop(i)
 
     """
     Comparison operators defined below
@@ -111,6 +106,17 @@ class Store(MappingElement):
         Returns a pretty, printable method for debugging
         """
         return f'L{self.buffer} holds {self.data}'
+    
+    def diffstring(self, diff:MappingDiff.Diff) -> str:
+        """
+        diff:MappingDiff.Diff
+            A diff object between this instance and another same class instance
+            
+        returns:
+            str highlighting the differences
+        """
+        # wraps the color
+        return f"""L{diff.wrap(self.buffer, "buffer")} holds {diff.wrap(self.data, "data")}"""
 
 class Mapping:
     def __init__(self, elements: Iterable[MappingElement]):
@@ -155,7 +161,14 @@ class MappingDiff:
             for var in v1.keys():
                 # sets the variables to if they correspond
                 self.differences[var] = v1[var] != v2[var]
-        
+
+            # converts differences into the appropriate color tags
+            for var in self.differences:
+                if self.differences[var]:
+                    self.differences[var]:str = Fore.RED
+                else:
+                    self.differences[var]:str = ''
+
         def __str__(self) -> str:
             return self.e1.diffstring(self) + '|' + self.e2.diffstring(self)
         
@@ -164,14 +177,14 @@ class MappingDiff:
             obj:Any
                 Any object that wishes to be highlighted.
             tag:str
-                The colorama color tag to wrap them in
+                The variable name that we're wrapping.
             
             returns:
                 Terminal highlighted string around that element
             """
-            # if there is a tag
-            if tag:
-                return f"{tag}{obj}{Fore.RESET}"
+            # if there is a difference
+            if self.differences[tag]:
+                return f"{self.differences[tag]}{obj}{Fore.RESET}"
             else:
                 return f"{obj}"
 
@@ -198,6 +211,8 @@ class MappingDiff:
                 self.differences.append(MappingDiff.Diff(e1, e2))
             else:
                 self.differences.append(False)
+            
+            # for the differences, identify where the 
 
     def __str__(self) -> str:
         string:str = ""

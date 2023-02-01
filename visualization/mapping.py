@@ -13,7 +13,7 @@ app:Flask = Flask(__name__)
 # landing page, serves as example graphical page for now
 @app.route('/')
 def graph():
-        # A Simple Example
+    # A Simple Example
     # 
     # Matrix multiplication: Z[m,n] := A[m,k] B[k,n]
     #
@@ -36,7 +36,7 @@ def graph():
         For('m', 0, 4),
         For('k', 0, 2),
         For('n', 0, 4),
-        Store(1, {'A', 'B', 'Z'}),
+        Store(1, {'A', 'B', 'Z'}, '11'),
         For('m', 0, 4),
         For('n', 0, 4),
         ParFor('k', 0, 8),
@@ -52,10 +52,10 @@ def graph():
     other_mapping = Mapping([
         Store(2, {'A', 'B', 'Z'}),
         For('k', 0, 2),
-        For('m', 0, 4),
+        For('m', 0, 2),
         For('n', 0, 4),
         Store(1, {'A', 'B', 'Z'}),
-        For('m', 0, 4),
+        For('m', 0, 8),
         For('n', 0, 4),
         ParFor('k', 0, 8),
         Store(0, {'A', 'B', 'Z'}),

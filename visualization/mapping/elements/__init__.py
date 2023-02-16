@@ -52,14 +52,3 @@ class MappingElement:
         # if you made it here, all equal, true
         return True
 
-    @abstractmethod
-    def kindred(self, other: MappingElement) -> bool:
-        """
-        Implemented in subclass. Checks to see if the
-        two objects are mutations of one another.
-
-        Returns:
-            Whether or not two elements are related to
-            one another.
-        """
-        raise NotImplementedError(f"This method is not defined in {type(self)}")

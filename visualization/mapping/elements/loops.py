@@ -21,15 +21,6 @@ class Loop(MappingElement):
         self._start: int = start
         self._end: int = end
 
-    def kindred(self, other: Loop):
-        """Implements the kindred method from MappingElement"""
-        # can only be kindred if the other is a loop
-        if not isinstance(other, Loop):
-            return False
-
-        # is kindred if they're iterating over the same dimension
-        return self.dim == other.dim
-
     #####################
     # DIM ACCESSOR FXNS #
     #####################

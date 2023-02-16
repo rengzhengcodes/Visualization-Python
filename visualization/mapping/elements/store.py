@@ -27,7 +27,7 @@ class Store(MappingElement):
                 # if not, add datspace
                 resident_spaces.append(space)
 
-        self._dataspace: tuple = tuple(resident_spaces)
+        self._dataspaces: tuple = tuple(resident_spaces)
 
     ########################
     # BUFFER ACCESSOR FXNS #

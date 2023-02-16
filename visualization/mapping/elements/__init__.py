@@ -6,23 +6,21 @@ from abc import ABC, abstractmethod
 
 
 class MappingElement:
-    """An abstract class representing all mapping elements
-    """
+    """An abstract class representing all mapping elements"""
+
     def __eq__(self, other: MappingElement) -> bool:
         """Defines strict equality between two mapping elements.
 
         Args:
             self: The left-hand side of the equality.
             other: The right-hand side of the equality.
-        
+
         Returns:
             A boolean describing if the two objects are equal
         """
         # makes sure other is a MappingElement
         if not issubclass(MappingElement, other):
-            raise TypeError(
-                f"Cannot compare MappingElement to {type(other)}"
-            )
+            raise TypeError(f"Cannot compare MappingElement to {type(other)}")
 
         # they're not equal if they're not the same type
         if typing(self) != typing(other):
@@ -46,7 +44,7 @@ class MappingElement:
             return True
 
     @abstractmethod
-    def kindred(self, other:MappingElement) -> bool:
+    def kindred(self, other: MappingElement) -> bool:
         """
         Implemented in subclass. Checks to see if the
         two objects are mutations of one another.
@@ -55,7 +53,4 @@ class MappingElement:
             Whether or not two elements are related to
             one another.
         """
-        raise NotImplementedError(
-            f"This method is not defined in {type(self)}"
-        )
-    
+        raise NotImplementedError(f"This method is not defined in {type(self)}")

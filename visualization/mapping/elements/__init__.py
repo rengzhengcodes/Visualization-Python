@@ -1,4 +1,14 @@
-# postponed type hinting
+"""Initializes the abstract MappingElement class used by the
+Mapping class.
+
+This file describes an abstract class and its equality operators
+for use by the rest of the mapping library.
+
+Typical usage example:
+class Foo(MappingElement):
+    pass
+"""
+
 from __future__ import annotations
 
 # imports abstract classes
@@ -23,25 +33,24 @@ class MappingElement:
             raise TypeError(f"Cannot compare MappingElement to {type(other)}")
 
         # they're not equal if they're not the same type
-        if typing(self) != typing(other):
+        if isinstance(other, type(self)):
             return False
+
         # they're equal if they share all the same vars
-        else:
-            # gets all the vars of both
-            own_vals: dict = vars(self)
-            other_vals: dict = vars(other)
+        own_vals: dict = vars(self)
+        other_vals: dict = vars(other)
 
-            # goes through all vars to check equality
-            for var, val in own_vals.items():
-                # check var exists in other
-                if var not in other_vals:
-                    return False
-                # checks the values are equal
-                elif other_vals[var] != val:
-                    return False
+        # goes through all vars to check equality
+        for var, val in own_vals.items():
+            # check var exists in other
+            if var not in other_vals:
+                return False
+            # checks the values are equal
+            if other_vals[var] != val:
+                return False
 
-            # if you made it here, all equal, true
-            return True
+        # if you made it here, all equal, true
+        return True
 
     @abstractmethod
     def kindred(self, other: MappingElement) -> bool:

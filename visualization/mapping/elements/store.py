@@ -9,13 +9,13 @@ class Store(MappingElement):
     """represents levels of storage our mapping has.
 
     Attributes:
-        buffer: The level of the buffer (closeness to compute)
+        level: The level of the store (closeness to compute)
         dataspaces: The dataspaces the buffer contains.
     """
 
-    def __init__(self, buffer: int, dataspaces: tuple[str], bypass: np.uint32 = 0):
+    def __init__(self, level: int, dataspaces: tuple[str], bypass: np.uint32 = 0):
         """Inits Store with buffer level, data, and prunes bypass from data"""
-        self._buffer: int = buffer
+        self._level: int = level
 
         # the data living in this space, post bypass
         resident_spaces: list = []
@@ -34,9 +34,9 @@ class Store(MappingElement):
     ########################
 
     @property
-    def buffer(self):
+    def level(self):
         """Getter for self._buffer"""
-        return self._buffer
+        return self._level
 
     ############################
     # DATASPACES ACCESSOR FXNS #

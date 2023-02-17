@@ -51,3 +51,6 @@ class MappingElement:
         # if you made it here, all equal, true
         return True
 
+    @abstractmethod
+    def __str__(self) -> str:
+        pass

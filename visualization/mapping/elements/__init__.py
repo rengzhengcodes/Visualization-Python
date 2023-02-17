@@ -1,8 +1,7 @@
-"""Initializes the abstract MappingElement class used by the
-Mapping class.
+"""Initializes the abstract MappingElement class used by the Mapping class.
 
-This file describes an abstract class and its equality operators
-for use by the rest of the mapping library.
+This file describes an abstract class and its equality operators for use by the
+rest of the mapping library.
 
 Typical usage example:
 class Foo(MappingElement):

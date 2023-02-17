@@ -53,4 +53,6 @@ class MappingElement:
 
     @abstractmethod
     def __str__(self) -> str:
-        pass
+        raise NotImplementedError(
+            f"Class {type(self)} has not implemented this method yet."
+        )

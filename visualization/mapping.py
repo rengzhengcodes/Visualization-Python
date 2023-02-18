@@ -1,5 +1,5 @@
 # imports module classes
-from __init__ import *
+from mappingelems import *
 
 # visualization libraries
 from flask import Flask, render_template

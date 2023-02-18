@@ -12,7 +12,8 @@ from typing import Union, Iterable
 import numpy as np
 
 # imports mapping elements
-from mapping.elements import __init__, stores, loops
+from mapping.elements import MappingElement
+from mapping.elements import stores, loops
 
 
 class Block:
@@ -29,9 +30,9 @@ class Block:
         children: The elements that directly belong to this block.
     """
 
-    def __init__(self, buffer: stores.Buffer) -> None:
+    def __init__(self, buffer: stores.Store) -> None:
         """Inits the Block with the buffer its contained in and a list"""
-        self._buffer: stores.Buffer = buffer
+        self._buffer: stores.Store = buffer
         self._children: list[Union[MappingElement, Block]] = []
 
     #################
@@ -52,14 +53,14 @@ class Block:
             yield element
 
         # nothing more to iterate through
-        raise StopIteration
+        return StopIteration
 
     ########################
     # BUFFER ACCESSOR FXNS #
     ########################
 
     @property
-    def buffer(self) -> stores.Buffer:
+    def buffer(self) -> stores.Store:
         """Returns the buffer the Block represents"""
         return self._buffer
 
@@ -83,5 +84,5 @@ class Mapping:
     def __init__(self, elements: Iterable[MappingElement]):
         """Initializes the Mapping, in blocks format"""
         for element in elements:
-            if isinstance(element, stores.Buffer):
+            if isinstance(element, stores.Store):
                 pass

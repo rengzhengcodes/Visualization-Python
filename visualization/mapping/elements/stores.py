@@ -29,10 +29,16 @@ class Store(MappingElement):
 
         # Take LSB (right-most) bit as index 0 for bypass.
         for index, space in enumerate(dataspaces):
+
             # checks if this index was bypassed
             if not (bypass >> index) & 0b1:
+
                 # if not, add datspace
                 resident_spaces.append(space)
+            
+            # if it was, mark that the dataspace was bypassed with ~ ~ for strikethrough
+            else:
+                resident_spaces.append(f"~{space}~")
 
         self._dataspaces: tuple = tuple(resident_spaces)
 

@@ -134,6 +134,15 @@ class Mapping:
             else:
                 raise TypeError(f"{type(element)} is not a MappingElement")
 
+    ########################
+    # BLOCKS ACCESSOR FXNS #
+    ########################
+
+    @property
+    def blocks(self):
+        """Returns a tuple of all the blocks currently contained"""
+        return tuple(self._blocks)
+
     #########################
     # testing aid functions #
     #########################
@@ -141,5 +150,11 @@ class Mapping:
     def __str__(self) -> str:
         """Converts the mapping into a printable string"""
 
-        # tracks the indentation level
-        indent_amount: int = 0
+        # the string we are outputting
+        out_string: str = ""
+
+        # adds all the blocks individually
+        for block in self.blocks:
+            out_string += f"{block}\n"
+
+        return out_string

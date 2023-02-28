@@ -38,3 +38,6 @@ mapping2 = Mapping([
     For('n', 0, 1),
     For('k', 0, 1)
 ])
+
+print(mapping1)
+print(mapping2)

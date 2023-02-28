@@ -35,6 +35,22 @@ class Block:
         self._buffer: stores.Store = buffer
         self._children: list[Union[MappingElement, Block]] = []
 
+    def flatten(self) -> tuple:
+        """Returns the block representation as a flattened version of self"""
+        # the flattened representation
+        flat:list = []
+
+        for elem in self:
+            # if it's a block, make that block flatten itself and add it to flat
+            if isinstance(elem, Block):
+                flat += elem.flatten()
+            # else, append the element
+            else:
+                flat.append(elem)
+
+        return tuple(flat)
+
+
     #################
     # ITERATOR FXNS #
     #################

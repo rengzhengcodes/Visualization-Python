@@ -29,6 +29,11 @@ class Store(MappingElement):
 
         self._dataspaces: tuple = tuple(resident_spaces)
 
+
+    def __str__(self) -> str:
+        """String representation of the Store"""
+        return f"buffer holds {self.dataspaces}"
+
     ########################
     # BUFFER ACCESSOR FXNS #
     ########################

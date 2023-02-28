@@ -32,20 +32,12 @@ class Block:
     def __init__(self, buffer: stores.Store) -> None:
         """Inits the Block with the buffer its contained in and a list"""
         self._buffer: stores.Store = buffer
-        self._children: list[Union[MappingElement, Block]] = []
+        self._children: list[MappingElement] = []
 
     def flatten(self) -> tuple:
         """Returns the block representation as a flattened version of self"""
-        # the flattened representation
-        flat:list = []
-
-        for elem in self:
-            # if it's a block, make that block flatten itself and add it to flat
-            if isinstance(elem, Block):
-                flat += elem.flatten()
-            # else, append the element
-            else:
-                flat.append(elem)
+        # the flattened representation of the block
+        flat:list = [self.buffer] + [elem for elem in self.children]
 
         return tuple(flat)
 
@@ -75,15 +67,15 @@ class Block:
 
         # checks for stores that should be in Blocks
         if isinstance(element, stores.Store):
-            raise TypeError("Inserted a Store. This should be inside a block")
+            raise TypeError("Inserted a Store. This should be inside a new Block")
         
         # checks we are appending a MappingElement
-        elif not isinstance(element, (MappingElement, Block)):
+        elif not isinstance(element, MappingElement):
             raise TypeError(
-                f"Inserted {type(element)}, which is not a MappingElement or Block"
+                f"Inserted {type(element)}, which is not a MappingElement"
             )
         
-        # appends the element or Block to children
+        # appends the element to children
         self._children.append(element)
 
 
@@ -117,6 +109,9 @@ class Mapping:
     def __init__(self, elements: Iterable[MappingElement]) -> None:
         """Initializes the Mapping, in blocks format"""
         
+        # the indentation blocks in the Mapping
+        self._blocks: list[Block] = []
+
         # the current block we're appending to
         current_block: Block = None
 
@@ -127,19 +122,24 @@ class Mapping:
             if isinstance(element, stores.Store):
                 
                 # creates the new block
-                new_block: Block = Block(element)
+                current_block: Block = Block(element)
+                # appends it to the list of blocks
+                self._blocks.append(current_block)
 
-                # if there is a higher Block, append the new block to it
-                if current_block is not None:
-                    current_block.append(new_block)
-                
-                # sets the old block to the new block
-                current_block = new_block
-
-            # otherwise, add the current element
+            # otherwise, add the current element to the current block
             elif isinstance(element, MappingElement):
                 current_block.append(element)
             
             # if it's not a mapping element, what went wrong
             else:
                 raise TypeError(f"{type(element)} is not a MappingElement")
+
+    #########################
+    # testing aid functions #
+    #########################
+
+    def __str__(self) -> str:
+        """Converts the mapping into a printable string"""
+
+        # tracks the indentation level
+        indent_amount: int = 0

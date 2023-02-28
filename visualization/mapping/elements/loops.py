@@ -3,6 +3,8 @@
 Typical usage example:
 ForLoop = For('X', 0, 4)
 """
+# imports super classes
+from mapping.elements import MappingElement
 
 
 class Loop(MappingElement):

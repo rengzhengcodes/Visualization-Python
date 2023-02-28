@@ -4,6 +4,10 @@ Typical use case:
 L0Buffer = Store(0, ('X'), 0)
 """
 
+# imports super class structure
+from mapping.elements import MappingElement
+# imports numpy
+import numpy as np
 
 class Store(MappingElement):
     """represents levels of storage our mapping has.

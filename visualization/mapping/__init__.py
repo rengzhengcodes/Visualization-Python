@@ -11,9 +11,8 @@ from typing import Union, Iterable
 # imports numpy
 import numpy as np
 
-# imports mapping elements
-from mapping.elements import MappingElement
-from mapping.elements import stores, loops
+# imports all of elements
+from mapping.elements import MappingElement, stores
 
 
 class Block:

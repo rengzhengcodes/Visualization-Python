@@ -12,8 +12,9 @@ from __future__ import annotations
 
 # imports abstract classes
 from abc import ABC, abstractmethod
+
 # imports numpy
-import numpy as np
+import numpy as np 
 
 
 class MappingElement:

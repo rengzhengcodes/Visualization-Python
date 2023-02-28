@@ -9,6 +9,7 @@ from mapping.elements import MappingElement
 # imports numpy
 import numpy as np
 
+
 class Store(MappingElement):
     """represents levels of storage our mapping has.
 

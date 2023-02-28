@@ -42,8 +42,8 @@ class Store(MappingElement):
 
     def __str__(self) -> str:
         """String representation of the Store"""
-        return _frame.format(
-            self.level, self.dataspaces
+        return self._frame.format(
+            level = self.level, dataspaces = self.dataspaces
         )
 
     ########################

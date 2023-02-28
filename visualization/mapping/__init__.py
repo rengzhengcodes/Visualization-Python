@@ -102,6 +102,22 @@ class Block:
         """Returns a static copy of all the elements"""
         return tuple(self._children)
 
+    #########################
+    # testing aid functions #
+    #########################
+    
+    def __str__(self) -> str:
+        """returns a string representation of the Block"""
+        
+        # the string we are outputting
+        out_string: str = f"{self.buffer}\n"
+
+        # adds the non-buffer elements, indented
+        for child in self.children:
+            out_string += f"\t{child}\n"
+
+        return out_string
+
 
 class Mapping:
     """Represents a hardware mapping."""
@@ -139,7 +155,7 @@ class Mapping:
     ########################
 
     @property
-    def blocks(self):
+    def blocks(self) -> tuple[Block]:
         """Returns a tuple of all the blocks currently contained"""
         return tuple(self._blocks)
 

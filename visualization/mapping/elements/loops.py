@@ -67,7 +67,7 @@ class For(Loop):
     def __str__(self):
         """Returns a string representation of the loop"""
         return self._frame.format(
-            self._dim, self._start, self._end
+            dim = self._dim, start = self._start, end = self._end
         )
 
 
@@ -87,5 +87,5 @@ class ParFor(Loop):
     def __str__(self):
         """Returns a stirng representation of the parallel for loop."""
         return self._frame.format(
-            self._dim, self._start, self._end
+            dim = self._dim, start = self._start, end = self._end
         )

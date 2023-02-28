@@ -51,21 +51,30 @@ class Loop(MappingElement):
 
 class For(Loop):
     """A mapping element representing a serial loop."""
+    # The general format any printout should be in
+    _frame: str = "for {dim} in [{start}, {end})"
 
     def __init__(self, dim: str, start: int, end: int):
         """Inits the serial loop."""
         super().__init__(dim, start, end)
 
     def __str__(self):
-        return f"for {self._dim} in [{self.start}, {self.end})"
+        """Returns a string representation of the loop"""
+        return self._frame.format(
+            self._dim, self._start, self._end
+        )
 
 
 class ParFor(Loop):
     """A mapping element representing a parallel loop."""
+    # The general format any printout should be in
+    _frame: str = "par-for {dim} in [{start}, {end})"
 
     def __init__(self, dim: str, start: int, end: int):
         """Inits the parallel loop."""
         super().__init__(dim, start, end)
 
     def __str__(self):
-        return f"par-for {self.dim} in [{self.start}, {self.end})"
+        return self._frame.format(
+            self._dim, self._start, self._end
+        )

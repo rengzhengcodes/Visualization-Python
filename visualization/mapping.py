@@ -74,5 +74,5 @@ def graph():
     )
 
 
-if __name__ == '__main__':
+if _    _name__ == '__main__':
     app.run(debug=True)

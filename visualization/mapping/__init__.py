@@ -71,6 +71,23 @@ class Block:
         # nothing more to iterate through
         return StopIteration
 
+    def append(self, element: MappingElement) -> None:
+        """Appends a new Block or non-store MappingElement to the list"""
+
+        # checks for stores that should be in Blocks
+        if isinstance(element, stores.Store):
+            raise TypeError("Inserted a Store. This should be inside a block")
+        
+        # checks we are appending a MappingElement
+        elif not isinstance(element, (MappingElement, Block)):
+            raise TypeError(
+                f"Inserted {type(element)}, which is not a MappingElement or Block"
+            )
+        
+        # appends the element or Block to children
+        self._children.append(element)
+
+
     ########################
     # BUFFER ACCESSOR FXNS #
     ########################
@@ -89,6 +106,7 @@ class Block:
     # CHILDREN ACCESSSOR FXNS #
     ###########################
 
+    @property
     def children(self) -> tuple:
         """Returns a static copy of all the elements"""
         return tuple(self._children)
@@ -97,8 +115,32 @@ class Block:
 class Mapping:
     """Represents a hardware mapping."""
 
-    def __init__(self, elements: Iterable[MappingElement]):
+    def __init__(self, elements: Iterable[MappingElement]) -> None:
         """Initializes the Mapping, in blocks format"""
+        
+        # the current block we're appending to
+        current_block: Block = None
+
+        # goes through all inputted elements
         for element in elements:
+
+            # checks if it's a store, if it is start a new Block
             if isinstance(element, stores.Store):
-                pass
+                
+                # creates the new block
+                new_block: Block = Block(element)
+
+                # if there is a higher Block, append the new block to it
+                if current_block is not None:
+                    current_block.append(new_block)
+                
+                # sets the old block to the new block
+                current_block = new_block
+
+            # otherwise, add the current element
+            elif isinstance(element, MappingElement):
+                current_block.append(element)
+            
+            # if it's not a mapping element, what went wrong
+            else:
+                raise TypeError(f"{type(element)} is not a MappingElement")

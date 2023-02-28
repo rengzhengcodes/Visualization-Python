@@ -57,7 +57,7 @@ class MappingElement:
             f"Class {type(self)} has not implemented this method yet."
         )
 
-class Differentiable():
+class Distinguishable():
     """Makes an object able to list key differences between itself and another
     object of its type"""
     def diffstring(self, other) -> str:
@@ -76,6 +76,4 @@ class Differentiable():
                 f"{type(self)}s cannot be compared against {type(other)}s."
             )
 
-        
-
-        return self.frame
+        return self._frame

@@ -12,6 +12,8 @@ class Store(MappingElement):
         level: The level of the store (closeness to compute)
         dataspaces: The dataspaces the buffer contains.
     """
+    # The general format any printout should be in
+    _frame: str = "buffer {level} stores {dataspaces}"
 
     def __init__(self, level: int, dataspaces: tuple[str], bypass: np.uint32 = 0):
         """Inits Store with buffer level, data, and prunes bypass from data"""
@@ -29,10 +31,15 @@ class Store(MappingElement):
 
         self._dataspaces: tuple = tuple(resident_spaces)
 
+    #########################
+    # testing aid functions #
+    #########################
 
     def __str__(self) -> str:
         """String representation of the Store"""
-        return f"buffer holds {self.dataspaces}"
+        return _frame.format(
+            self.level, self.dataspaces
+        )
 
     ########################
     # BUFFER ACCESSOR FXNS #

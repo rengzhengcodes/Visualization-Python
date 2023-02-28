@@ -58,6 +58,10 @@ class For(Loop):
         """Inits the serial loop."""
         super().__init__(dim, start, end)
 
+    #########################
+    # testing aid functions #
+    #########################
+
     def __str__(self):
         """Returns a string representation of the loop"""
         return self._frame.format(
@@ -74,7 +78,12 @@ class ParFor(Loop):
         """Inits the parallel loop."""
         super().__init__(dim, start, end)
 
+    #########################
+    # testing aid functions #
+    #########################
+
     def __str__(self):
+        """Returns a stirng representation of the parallel for loop."""
         return self._frame.format(
             self._dim, self._start, self._end
         )

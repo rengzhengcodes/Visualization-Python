@@ -31,11 +31,11 @@ class MappingElement:
             A boolean describing if the two objects are equal
         """
         # makes sure other is a MappingElement
-        if not issubclass(MappingElement, other):
+        if not isinstance(other, MappingElement):
             raise TypeError(f"Cannot compare MappingElement to {type(other)}")
 
         # they're not equal if they're not the same type
-        if isinstance(other, type(self)):
+        if not isinstance(other, type(self)):
             return False
 
         # they're equal if they share all the same vars

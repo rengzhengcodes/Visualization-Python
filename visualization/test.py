@@ -43,5 +43,11 @@ mapping2 = Mapping(
     ]
 )
 
+print("Mapping 1")
 print(mapping1)
+print("Mapping 2")
 print(mapping2)
+print("Mapping1 in comparison to Mapping2")
+print(mapping1.diff(mapping2))
+print("Mapping2 in comparison to Mapping1")
+print(mapping2.diff(mapping1))

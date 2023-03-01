@@ -122,7 +122,7 @@ class Block:
         out_string: str = f"{self.buffer}\n"
 
         # adds the comparison of the non-buffer elements, indented
-        for child, index in enumerate(self.children):
+        for index, child in enumerate(self.children):
             
             # checks that the child is Distinguishable
             if isinstance(child, Distinguishable):
@@ -210,7 +210,7 @@ class Mapping:
         out_string: str = ""
 
         # adds all the blocks and their differences individually
-        for block, index in enumerate(self.blocks):
+        for index, block in enumerate(self.blocks):
             out_string += f"{block.diff(other_blocks[index])}\n"
         
         return out_string

@@ -3,11 +3,14 @@
 Typical usage example:
 ForLoop = For('X', 0, 4)
 """
+# future annotations
+from __future__ import annotations
+
 # imports super classes
-from mapping.elements import MappingElement
+from mapping.elements import MappingElement, Distinguishable
 
 
-class Loop(MappingElement):
+class Loop(MappingElement, Distinguishable):
     """A mapping element representing a generic loop.
 
     Attributes:
@@ -64,10 +67,58 @@ class For(Loop):
     # testing aid functions #
     #########################
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns a string representation of the loop"""
         return self._frame.format(
             dim = self._dim, start = self._start, end = self._end
+        )
+
+
+    def diffstring(self, other: For) -> str:
+        """Notes the differences between each loop"""
+        if not isinstance(other, For):
+            raise TypeError(f"{type(other)} cannot be compared with loops")
+        
+        # if the two are equal, just return the str
+        if self == other:
+
+            # tests that the equality function is true implicitly
+            assert str(self) == str(other), (
+                f"{self} and {other} evaluated as the same but aren't."
+            )
+            
+            # returns the string, as the two should be the same
+            return str(self)
+
+        # tests that the equality function is untrue implicitly
+        assert str(self) != str(other), (
+            f"{self} and {other} evaluated as different but aren't."
+        )
+
+        # strings representing the printout variables
+        dim: str = str(dim)
+        start: str = str(start)
+        end: str = str(end)
+        
+        # checks if dim is equal, if not, note.
+        if self.dim != other.dim:
+            dim = f"!{dim}!"
+        
+        # checks if start are equal, if not, note whether or not this is is an
+        # increase or decrease
+        if self.start < other.start:
+            start = f"{start}^"
+        elif self.start > other.start:
+            start = f"{start}v"
+
+        # does the start check but for end
+        if self.end < other.end:
+            end = f"{end}^"
+        elif self.end > other.end:
+            end = f"{end}v"
+
+        return self._frame.format(
+            dim=dim, start=start, end=end
         )
 
 

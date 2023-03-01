@@ -60,9 +60,12 @@ class MappingElement:
             f"Class {type(self)} has not implemented this method yet."
         )
 
+
 class Distinguishable():
     """Makes an object able to list key differences between itself and another
-    object of its type"""
+    object of its type."""
+
+    @abstractmethod
     def diffstring(self, other) -> str:
         """Creates a string marking the differences between oneself and another
         member of the class.
@@ -73,10 +76,4 @@ class Distinguishable():
         Returns:
             A string with ANSI coloring of the differences.
         """
-        # makes sure the two objects are of the same class
-        if not isinstance(other, type(self)):
-            raise TypeError(
-                f"{type(self)}s cannot be compared against {type(other)}s."
-            )
-
-        return self._frame
+        raise NotImplementedError(f"{type(self)} has not implemented diffstring")

@@ -94,7 +94,7 @@ class Loop(MappingElement, Distinguishable):
 
         # checks if dim is equal, if not, note.
         if self.dim != other.dim:
-            dim = f"!{dim}!"
+            dim = f"**{dim}**"
 
         # checks if start are equal, if not, note whether or not this is is an
         # increase or decrease

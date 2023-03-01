@@ -38,7 +38,7 @@ class Store(MappingElement):
 
             # if it was, mark that the dataspace was bypassed with ~ ~ for strikethrough
             else:
-                resident_spaces.append(f"~{space}~")
+                resident_spaces.append(f"~~{space}~~")
 
         self._dataspaces: tuple = tuple(resident_spaces)
 
@@ -48,7 +48,18 @@ class Store(MappingElement):
 
     def __str__(self) -> str:
         """String representation of the Store"""
-        return self._frame.format(level=self.level, dataspaces=self.dataspaces)
+
+        # builds the string for dataspaces so we don't have annoying "" in print
+        dataspace_str: str = "("
+
+        # adds all the dataspaces
+        for dataspace in self.dataspaces:
+            dataspace_str += f"{dataspace}, "
+
+        # removes ", " from the end of the string printing and closes paren
+        dataspace_str = f"{dataspace_str.rstrip(', ')})"
+
+        return self._frame.format(level=self.level, dataspaces=dataspace_str)
 
     ########################
     # BUFFER ACCESSOR FXNS #

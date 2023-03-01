@@ -12,7 +12,7 @@ from typing import Union, Iterable
 import numpy as np
 
 # imports all of elements
-from mapping.elements import MappingElement, stores
+from mapping.elements import MappingElement, Distinguishable, stores
 
 
 class Block:
@@ -97,6 +97,43 @@ class Block:
     def children(self) -> tuple:
         """Returns a static copy of all the elements"""
         return tuple(self._children)
+
+    ########################
+    # COMPARISON FUNCTIONS #
+    ########################
+
+    def diff(self, other:Block) -> str:
+        """Notes the difference between two blocks on the same level"""
+        
+        # checks we are doing block to block comparison
+        if not isinstance(other, Block):
+            raise TypeError(f"Cannot compare {type(other)} to Block.")
+
+        # checks the buffers are of the same level
+        assert self.level == other.level, f"Cannot compare blocks between levels"
+
+        ## synthesizes the diffstring ##
+
+        # the children of the other buffer
+        other_children: tuple = other.children
+
+        # string we're outputting; we don't do any comparison checks on the buffer
+        # as we already note the bypasses.
+        out_string: str = f"{self.buffer}\n"
+
+        # adds the comparison of the non-buffer elements, indented
+        for child, index in enumerate(self.children):
+            
+            # checks that the child is Distinguishable
+            if isinstance(child, Distinguishable):
+                # if so, check the difference between the corresponding children
+                out_string += f"\t{child.diffstring(other_children[index])}\n"
+            
+            else:
+                # otherwise, just add the child
+                out_string += f"\t{child}\n"
+        
+        return out_string
 
     #########################
     # testing aid functions #

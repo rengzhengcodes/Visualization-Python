@@ -110,7 +110,7 @@ class Block:
             raise TypeError(f"Cannot compare {type(other)} to Block.")
 
         # checks the buffers are of the same level
-        assert self.level == other.level, f"Cannot compare blocks between levels"
+        assert self.level == other.level, "Cannot compare blocks between levels"
 
         ## synthesizes the diffstring ##
 

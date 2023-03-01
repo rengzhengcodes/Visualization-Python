@@ -128,17 +128,9 @@ class For(Loop):
     # string representation of what type of loop this is
     _loop_type = "for"
 
-    def __init__(self, dim: str, start: int, end: int):
-        """Inits the serial loop."""
-        super().__init__(dim, start, end)
-
 
 class ParFor(Loop):
     """A mapping element representing a parallel loop."""
 
     # string representation of what type of loop this is
     _loop_type = "par-for"
-
-    def __init__(self, dim: str, start: int, end: int):
-        """Inits the parallel loop."""
-        super().__init__(dim, start, end)

@@ -37,7 +37,7 @@ class Block:
     def flatten(self) -> tuple:
         """Returns the block representation as a flattened version of self"""
         # the flattened representation of the block
-        flat: list = [self.buffer] + [elem for elem in self.children]
+        flat: list = [self.buffer] + list(self.children)
 
         return tuple(flat)
 
@@ -69,7 +69,7 @@ class Block:
             raise TypeError("Inserted a Store. This should be inside a new Block")
 
         # checks we are appending a MappingElement
-        elif not isinstance(element, MappingElement):
+        if not isinstance(element, MappingElement):
             raise TypeError(f"Inserted {type(element)}, which is not a MappingElement")
 
         # appends the element to children

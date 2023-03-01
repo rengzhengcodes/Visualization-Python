@@ -66,7 +66,7 @@ class Distinguishable:
     object of its type."""
 
     @abstractmethod
-    def diffstring(self, other) -> str:
+    def diff(self, other) -> str:
         """Creates a string marking the differences between oneself and another
         member of the class.
 
@@ -74,6 +74,6 @@ class Distinguishable:
             other -- of the same type as self. To be comapred against.
 
         Returns:
-            A string with ANSI coloring of the differences.
+            A string with color-agnostic representation of the differences.
         """
         raise NotImplementedError(f"{type(self)} has not implemented diffstring")

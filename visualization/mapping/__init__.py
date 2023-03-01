@@ -126,7 +126,7 @@ class Block:
             # checks that the child is Distinguishable
             if isinstance(child, Distinguishable):
                 # if so, check the difference between the corresponding children
-                out_string += f"\t{child.diffstring(other_children[index])}\n"
+                out_string += f"\t{child.diff(other_children[index])}\n"
 
             else:
                 # otherwise, just add the child

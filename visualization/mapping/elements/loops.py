@@ -62,7 +62,7 @@ class Loop(MappingElement, Distinguishable):
     # COMPARISON FXNS #
     ###################
 
-    def diffstring(self, other: Loop) -> str:
+    def diff(self, other: Loop) -> str:
         """Notes the differences between each loop"""
         if not isinstance(other, Loop):
             raise TypeError(f"{type(other)} cannot be compared with loops")

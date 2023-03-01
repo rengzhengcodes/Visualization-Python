@@ -78,9 +78,9 @@ class Loop(MappingElement, Distinguishable):
             return str(self)
 
         # tests that the equality function is untrue implicitly
-        assert str(self) != str(other), (
-            f"{self} and {other} evaluated as different but aren't."
-        )
+        assert str(self) != str(
+            other
+        ), f"{self} and {other} evaluated as different but aren't."
 
         # strings representing the printout variables
         loop_type: str = self._loop_type
@@ -109,13 +109,12 @@ class Loop(MappingElement, Distinguishable):
         elif self.end > other.end:
             end = f"{end}v"
 
-        return self._frame.format(
-            loop_type=loop_type, dim=dim, start=start, end=end
-        )
+        return self._frame.format(loop_type=loop_type, dim=dim, start=start, end=end)
 
 
 class For(Loop):
     """A mapping element representing a serial loop."""
+
     # string representation of what type of loop this is
     _loop_type = "for"
 
@@ -136,6 +135,7 @@ class For(Loop):
 
 class ParFor(Loop):
     """A mapping element representing a parallel loop."""
+
     # string representation of what type of loop this is
     _loop_type = "par-for"
 

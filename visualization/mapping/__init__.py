@@ -102,9 +102,9 @@ class Block:
     # COMPARISON FUNCTIONS #
     ########################
 
-    def diff(self, other:Block) -> str:
+    def diff(self, other: Block) -> str:
         """Notes the difference between two blocks on the same level"""
-        
+
         # checks we are doing block to block comparison
         if not isinstance(other, Block):
             raise TypeError(f"Cannot compare {type(other)} to Block.")
@@ -123,16 +123,15 @@ class Block:
 
         # adds the comparison of the non-buffer elements, indented
         for index, child in enumerate(self.children):
-            
             # checks that the child is Distinguishable
             if isinstance(child, Distinguishable):
                 # if so, check the difference between the corresponding children
                 out_string += f"\t{child.diffstring(other_children[index])}\n"
-            
+
             else:
                 # otherwise, just add the child
                 out_string += f"\t{child}\n"
-        
+
         return out_string
 
     #########################
@@ -194,9 +193,9 @@ class Mapping:
     # COMPARISON FXNS #
     ###################
 
-    def diff(self, other:Mapping) -> str:
+    def diff(self, other: Mapping) -> str:
         """Notes the differences between two mappings"""
-        
+
         # checks other input type
         if not isinstance(other, Mapping):
             raise TypeError(f"{type(other)} cannot be compared with Mapping")
@@ -212,7 +211,7 @@ class Mapping:
         # adds all the blocks and their differences individually
         for index, block in enumerate(self.blocks):
             out_string += f"{block.diff(other_blocks[index])}\n"
-        
+
         return out_string
 
     #########################

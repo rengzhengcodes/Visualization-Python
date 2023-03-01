@@ -115,7 +115,7 @@ class Block:
         ## synthesizes the diffstring ##
 
         # the children of the other buffer
-        other_children: tuple = other.children
+        other_children: tuple[MappingElement] = other.children
 
         # string we're outputting; we don't do any comparison checks on the buffer
         # as we already note the bypasses.
@@ -189,6 +189,31 @@ class Mapping:
     def blocks(self) -> tuple[Block]:
         """Returns a tuple of all the blocks currently contained"""
         return tuple(self._blocks)
+
+    ###################
+    # COMPARISON FXNS #
+    ###################
+
+    def diff(self, other:Mapping) -> str:
+        """Notes the differences between two mappings"""
+        
+        # checks other input type
+        if not isinstance(other, Mapping):
+            raise TypeError(f"{type(other)} cannot be compared with Mapping")
+
+        ## synthesizes the diffstring ##
+
+        # the blocks of the other mapping
+        other_blocks: tuple[Block] = other.blocks
+
+        # the string we're outputting
+        out_string: str = ""
+
+        # adds all the blocks and their differences individually
+        for block, index in enumerate(self.blocks):
+            out_string += f"{block.diff(other_blocks[index])}\n"
+        
+        return out_string
 
     #########################
     # testing aid functions #

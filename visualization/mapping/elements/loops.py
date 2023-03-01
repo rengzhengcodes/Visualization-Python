@@ -99,15 +99,15 @@ class Loop(MappingElement, Distinguishable):
         # checks if start are equal, if not, note whether or not this is is an
         # increase or decrease
         if self.start < other.start:
-            start = f"{start}^"
+            start = f"{start} v"
         elif self.start > other.start:
-            start = f"{start}v"
+            start = f"{start} ^"
 
         # does the start check but for end
         if self.end < other.end:
-            end = f"{end}^"
+            end = f"{end} v"
         elif self.end > other.end:
-            end = f"{end}v"
+            end = f"{end} ^"
 
         return self._frame.format(loop_type=loop_type, dim=dim, start=start, end=end)
 

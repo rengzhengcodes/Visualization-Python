@@ -37,10 +37,9 @@ class Block:
     def flatten(self) -> tuple:
         """Returns the block representation as a flattened version of self"""
         # the flattened representation of the block
-        flat:list = [self.buffer] + [elem for elem in self.children]
+        flat: list = [self.buffer] + [elem for elem in self.children]
 
         return tuple(flat)
-
 
     #################
     # ITERATOR FXNS #
@@ -68,16 +67,13 @@ class Block:
         # checks for stores that should be in Blocks
         if isinstance(element, stores.Store):
             raise TypeError("Inserted a Store. This should be inside a new Block")
-        
+
         # checks we are appending a MappingElement
         elif not isinstance(element, MappingElement):
-            raise TypeError(
-                f"Inserted {type(element)}, which is not a MappingElement"
-            )
-        
+            raise TypeError(f"Inserted {type(element)}, which is not a MappingElement")
+
         # appends the element to children
         self._children.append(element)
-
 
     ########################
     # BUFFER ACCESSOR FXNS #
@@ -105,10 +101,10 @@ class Block:
     #########################
     # testing aid functions #
     #########################
-    
+
     def __str__(self) -> str:
         """returns a string representation of the Block"""
-        
+
         # the string we are outputting
         out_string: str = f"{self.buffer}\n"
 
@@ -124,7 +120,7 @@ class Mapping:
 
     def __init__(self, elements: Iterable[MappingElement]) -> None:
         """Initializes the Mapping, in blocks format"""
-        
+
         # the indentation blocks in the Mapping
         self._blocks: list[Block] = []
 
@@ -133,10 +129,8 @@ class Mapping:
 
         # goes through all inputted elements
         for element in elements:
-
             # checks if it's a store, if it is start a new Block
             if isinstance(element, stores.Store):
-                
                 # creates the new block
                 current_block: Block = Block(element)
                 # appends it to the list of blocks
@@ -145,7 +139,7 @@ class Mapping:
             # otherwise, add the current element to the current block
             elif isinstance(element, MappingElement):
                 current_block.append(element)
-            
+
             # if it's not a mapping element, what went wrong
             else:
                 raise TypeError(f"{type(element)} is not a MappingElement")

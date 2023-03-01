@@ -14,7 +14,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 # imports numpy
-import numpy as np 
+import numpy as np
 
 
 class MappingElement:
@@ -61,7 +61,7 @@ class MappingElement:
         )
 
 
-class Distinguishable():
+class Distinguishable:
     """Makes an object able to list key differences between itself and another
     object of its type."""
 
@@ -72,7 +72,7 @@ class Distinguishable():
 
         Attributes:
             other -- of the same type as self. To be comapred against.
-        
+
         Returns:
             A string with ANSI coloring of the differences.
         """

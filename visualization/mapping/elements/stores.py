@@ -6,6 +6,7 @@ L0Buffer = Store(0, ('X'), 0)
 
 # imports super class structure
 from mapping.elements import MappingElement
+
 # imports numpy
 import numpy as np
 
@@ -17,6 +18,7 @@ class Store(MappingElement):
         level: The level of the store (closeness to compute)
         dataspaces: The dataspaces the buffer contains.
     """
+
     # The general format any printout should be in
     _frame: str = "buffer {level} stores {dataspaces}"
 
@@ -29,13 +31,11 @@ class Store(MappingElement):
 
         # Take LSB (right-most) bit as index 0 for bypass.
         for index, space in enumerate(dataspaces):
-
             # checks if this index was bypassed
             if not (bypass >> index) & 0b1:
-
                 # if not, add datspace
                 resident_spaces.append(space)
-            
+
             # if it was, mark that the dataspace was bypassed with ~ ~ for strikethrough
             else:
                 resident_spaces.append(f"~{space}~")
@@ -48,9 +48,7 @@ class Store(MappingElement):
 
     def __str__(self) -> str:
         """String representation of the Store"""
-        return self._frame.format(
-            level = self.level, dataspaces = self.dataspaces
-        )
+        return self._frame.format(level=self.level, dataspaces=self.dataspaces)
 
     ########################
     # BUFFER ACCESSOR FXNS #

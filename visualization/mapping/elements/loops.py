@@ -56,6 +56,7 @@ class Loop(MappingElement, Distinguishable):
 
 class For(Loop):
     """A mapping element representing a serial loop."""
+
     # The general format any printout should be in
     _frame: str = "for {dim} in [{start}, {end})"
 
@@ -69,41 +70,37 @@ class For(Loop):
 
     def __str__(self) -> str:
         """Returns a string representation of the loop"""
-        return self._frame.format(
-            dim = self._dim, start = self._start, end = self._end
-        )
-
+        return self._frame.format(dim=self._dim, start=self._start, end=self._end)
 
     def diffstring(self, other: For) -> str:
         """Notes the differences between each loop"""
         if not isinstance(other, For):
             raise TypeError(f"{type(other)} cannot be compared with loops")
-        
+
         # if the two are equal, just return the str
         if self == other:
-
             # tests that the equality function is true implicitly
-            assert str(self) == str(other), (
-                f"{self} and {other} evaluated as the same but aren't."
-            )
-            
+            assert str(self) == str(
+                other
+            ), f"{self} and {other} evaluated as the same but aren't."
+
             # returns the string, as the two should be the same
             return str(self)
 
         # tests that the equality function is untrue implicitly
-        assert str(self) != str(other), (
-            f"{self} and {other} evaluated as different but aren't."
-        )
+        assert str(self) != str(
+            other
+        ), f"{self} and {other} evaluated as different but aren't."
 
         # strings representing the printout variables
         dim: str = str(dim)
         start: str = str(start)
         end: str = str(end)
-        
+
         # checks if dim is equal, if not, note.
         if self.dim != other.dim:
             dim = f"!{dim}!"
-        
+
         # checks if start are equal, if not, note whether or not this is is an
         # increase or decrease
         if self.start < other.start:
@@ -117,13 +114,12 @@ class For(Loop):
         elif self.end > other.end:
             end = f"{end}v"
 
-        return self._frame.format(
-            dim=dim, start=start, end=end
-        )
+        return self._frame.format(dim=dim, start=start, end=end)
 
 
 class ParFor(Loop):
     """A mapping element representing a parallel loop."""
+
     # The general format any printout should be in
     _frame: str = "par-for {dim} in [{start}, {end})"
 
@@ -137,6 +133,4 @@ class ParFor(Loop):
 
     def __str__(self):
         """Returns a stirng representation of the parallel for loop."""
-        return self._frame.format(
-            dim = self._dim, start = self._start, end = self._end
-        )
+        return self._frame.format(dim=self._dim, start=self._start, end=self._end)

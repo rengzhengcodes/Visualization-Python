@@ -25,8 +25,13 @@ span.diff {
 }
 
 /* takes indentation from the python string */
-span.pre {
+div.pre {
     white-space:pre;
     margin:0;
     padding:0;
+}
+
+div.pre > p {
+    margin: 0;
+    padding: 0;
 }

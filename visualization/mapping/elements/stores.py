@@ -38,7 +38,7 @@ class Store(MappingElement):
 
             # if it was, mark that the dataspace was bypassed with ~ ~ for strikethrough
             else:
-                resident_spaces.append(f"~~{space}~~")
+                resident_spaces.append(f"==~~{space}~~==")
 
         self._dataspaces: tuple = tuple(resident_spaces)
 

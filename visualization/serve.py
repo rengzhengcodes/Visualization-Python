@@ -16,7 +16,7 @@ from mapping.elements.stores import Store
 # creates server
 app:Flask = Flask(__name__)
 # makes it markdown compliant
-Misaka(app, strikethrough=True)
+Misaka(app, strikethrough=True, highlight=True)
 
 # landing page, serves as example graphical page for now
 @app.route('/')
@@ -69,7 +69,7 @@ def graph():
         Store(0, ('A', 'B', 'Z')),
         For('m', 0, 1),
         For('n', 0, 1),
-        For('k', 0, 1)
+        ParFor('k', 0, 1)
     ])
 
     return render_template(

@@ -235,6 +235,31 @@ class Mapping:
     def blocks(self) -> tuple[Block]:
         """Returns a tuple of all the blocks currently contained"""
         return tuple(self._blocks)
+    
+    ################################
+    # CHARACTERISTIC ACCESSOR FXNS #
+    ################################
+
+    @property
+    def cycles(self) -> int:
+        """Gets the number of cycles"""
+        return self._cycles
+    
+    @cycles.setter
+    def set_cycles(self, cycles: int) -> None:
+        """Sets the number of cycles"""
+        self._cycles = cycles
+    
+    @property
+    def energy(self) -> float:
+        """Gets the energy cost of the mapping"""
+        return self._energy
+    
+    @energy.setter
+    def set_energy(self, energy: float) -> None:
+        """Sets the energy cost of the mapping"""
+        self._energy = energy
+
 
     ###################
     # COMPARISON FXNS #

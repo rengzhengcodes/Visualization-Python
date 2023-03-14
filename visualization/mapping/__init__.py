@@ -98,9 +98,56 @@ class Block:
         """Returns a static copy of all the elements"""
         return tuple(self._children)
 
+    @children.setter
+    def set_children(self, orphans: list) -> bool:
+        """Sets the children if and if the Block has no children"""
+        # if we already have children, don't mutate
+        if self.children:
+            return False
+        # otherwise, adopt the orphans
+        else:
+            for orphan in orphans:
+                self.append(orphan)
+            return True
+
+    @property
+    def loops(self) -> tuple:
+        """Returns an ordered list of the dimensions enumerated over"""
+        # the list of dimensions
+        dims: list = []
+        
+        # pulls out the children and their dimensions in order
+        for child in self.children:
+            dims.append(child.dim)
+        
+        return tuple(dims)
+
     ########################
     # COMPARISON FUNCTIONS #
     ########################
+
+    def justify(self, other: Block) -> Block:
+        """Fills in the missing dims being iterated over from the other Block
+        
+        returns a new block"""
+        # the loops in each Block
+        self_loops: tuple = self.loops
+        other_loops: tuple = other.loops
+
+        # the loops not contained in both sets
+        missing_loops: set = set(self_loops).difference(set(other_loops))
+        # the loops not contained in self
+        missing_loops: set = missing_loops.difference_update(self_loops)
+
+        # the new block to be returned
+        new_block: Block = Block(self.buffer)
+
+        # inserts the missing loops in the correct relative positions
+        loop: str
+        for loop in missing_loops:
+            pass
+
+
 
     def diff(self, other: Block) -> str:
         """Notes the difference between two blocks on the same level"""

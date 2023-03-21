@@ -31,10 +31,10 @@ Misaka(
 
 
 # landing page, serves as example graphical page for now
-@app.route("/")
-def graph() -> str:
+@app.route("/basic")
+def basic() -> str:
     """Serves a webapp on the root address that directly compares 2 mappings
-    written in code.
+    written in code. No justification occuring,
     """
     # A Simple Example
     #
@@ -71,9 +71,6 @@ def graph() -> str:
         ]
     )
 
-    print(mapping)
-    print("######")
-
     other_mapping = Mapping(
         [
             Store(2, ("A", "B", "Z")),
@@ -99,6 +96,39 @@ def graph() -> str:
         ),
         mappings=(mapping, other_mapping),
     )
+
+
+@app.route("/justify")
+def justify() -> str:
+    """Very crude visual test for the justification function.
+    """
+    mapping = Mapping(
+        [
+            Store(2, ("A", "B", "Z")),
+            For("n", 0, 4),
+            Store(1, ("A", "B", "Z"), np.uint32(0b11)),
+            Store(0, ("A", "B", "Z")),
+            For("m", 0, 1),
+            For("k", 0, 1),
+        ]
+    )
+    other_mapping = Mapping(
+        [
+            Store(2, ("A", "B", "Z")),
+            For("k", 0, 2),
+            For("m", 0, 2),
+            For("n", 0, 4),
+            Store(1, ("A", "B", "Z")),
+            For("m", 0, 8),
+            For("n", 0, 4),
+            ParFor("k", 0, 8),
+            Store(0, ("A", "B", "Z")),
+            For("m", 0, 1),
+            For("n", 0, 1),
+            ParFor("k", 0, 1),
+        ]
+    )
+
 
 
 if __name__ == "__main__":

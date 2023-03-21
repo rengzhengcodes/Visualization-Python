@@ -144,8 +144,10 @@ def justify() -> str:
         mappings=(mapping, other_mapping),
     )
 
+
 @app.route("/just_complex")
 def justify_complex():
+    """Crude complex justify test"""
     mapping = Mapping(
         [
             Store(2, ("A", "B", "Z")),
@@ -159,7 +161,6 @@ def justify_complex():
             For("n", 0, 1),
         ]
     )
-
 
     other_mapping = Mapping(
         [
@@ -190,6 +191,7 @@ def justify_complex():
         ),
         mappings=(mapping, other_mapping),
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)

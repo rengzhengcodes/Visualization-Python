@@ -129,7 +129,7 @@ def justify() -> str:
     )
     # justifies the mappings against each other
     mapping = mapping.justify(other_mapping)
-    # other_mapping = other_mapping.justify(mapping)
+    other_mapping = other_mapping.justify(mapping)
 
     print(mapping)
     print("#######")
@@ -144,6 +144,52 @@ def justify() -> str:
         mappings=(mapping, other_mapping),
     )
 
+@app.route("/just_complex")
+def justify_complex():
+    mapping = Mapping(
+        [
+            Store(2, ("A", "B", "Z")),
+            For("m", 0, 2),
+            For("k", 0, 2),
+            Store(1, ("A", "B", "Z")),
+            ParFor("k", 0, 8),
+            For("m", 0, 8),
+            Store(0, ("A", "B", "Z")),
+            ParFor("k", 0, 1),
+            For("n", 0, 1),
+        ]
+    )
+
+
+    other_mapping = Mapping(
+        [
+            Store(2, ("A", "B", "Z")),
+            For("m", 0, 2),
+            For("n", 0, 4),
+            Store(1, ("A", "B", "Z")),
+            For("n", 0, 4),
+            ParFor("k", 0, 8),
+            Store(0, ("A", "B", "Z")),
+            For("n", 0, 1),
+        ]
+    )
+
+    # justifies the mappings against each other
+    mapping = mapping.justify(other_mapping)
+    other_mapping = other_mapping.justify(mapping)
+
+    print(mapping)
+    print("#######")
+    print(other_mapping)
+
+    return render_template(
+        "mapping.html",
+        diffs=(
+            mapping.diff(other_mapping),
+            other_mapping.diff(mapping),
+        ),
+        mappings=(mapping, other_mapping),
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -12,7 +12,10 @@ from typing import Union, Iterable
 import numpy as np
 
 # imports all of elements
-from mapping.elements import MappingElement, Distinguishable, stores
+from mapping.elements import MappingElement, Distinguishable
+# imports classes of elements
+from mapping.elements.loops import Loop, For, ParFor
+from mapping.elements.stores import Store
 
 
 class Block:
@@ -29,9 +32,9 @@ class Block:
         children: The elements that directly belong to this block.
     """
 
-    def __init__(self, buffer: stores.Store) -> None:
+    def __init__(self, buffer: Store) -> None:
         """Inits the Block with the buffer its contained in and a list"""
-        self._buffer: stores.Store = buffer
+        self._buffer: Store = buffer
         self._children: list[MappingElement] = []
 
     def flatten(self) -> tuple:
@@ -65,7 +68,7 @@ class Block:
         """Appends a new Block or non-store MappingElement to the list"""
 
         # checks for stores that should be in Blocks
-        if isinstance(element, stores.Store):
+        if isinstance(element, Store):
             raise TypeError("Inserted a Store. This should be inside a new Block")
 
         # checks we are appending a MappingElement
@@ -80,7 +83,7 @@ class Block:
     ########################
 
     @property
-    def buffer(self) -> stores.Store:
+    def buffer(self) -> Store:
         """Returns the buffer the Block represents"""
         return self._buffer
 
@@ -128,9 +131,10 @@ class Block:
     ########################
 
     def justify(self, other: Block) -> Block:
-        """Fills in the missing dims being iterated over from the other Block
+        """Inserts into a copy of self the dims that are located in this Block
+        but not the other Block.
 
-        returns a new block"""
+        returns the copy of self"""
         # the loops in each Block
         self_loops: tuple = self.loops
         other_loops: tuple = other.loops
@@ -140,13 +144,26 @@ class Block:
         # the loops not contained in self
         missing_loops: set = missing_loops.difference_update(self_loops)
 
+        # represents the new block loop order
+        new_loops: list = list(self_loops)
+
+        # inserts the missing loops in the correct relative positions
+        loop: Loop
+        for loop in missing_loops:
+            # finds its index in other
+            other_index: int = other_loops.index(loop)
+
+            # inserts into new loop at index
+            new_loops.insert(other_index, loop)
+
         # the new block to be returned
         new_block: Block = Block(self.buffer)
 
-        # inserts the missing loops in the correct relative positions
-        loop: str
-        for loop in missing_loops:
-            pass
+        # sets its children
+        new_block.children = new_loops
+
+        return new_block
+
 
     def diff(self, other: Block) -> str:
         """Notes the difference between two blocks on the same level"""
@@ -224,7 +241,7 @@ class Mapping:
         # goes through all inputted elements
         for element in elements:
             # checks if it's a store, if it is start a new Block
-            if isinstance(element, stores.Store):
+            if isinstance(element, Store):
                 # creates the new block
                 current_block: Block = Block(element)
                 # appends it to the list of blocks

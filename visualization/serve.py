@@ -3,30 +3,34 @@ from flask import Flask, render_template
 import plotly.express as px
 import pandas as pd
 import numpy as np
+
 # python string to html conversion
 from html import escape
+
 # python markdown to html conversion
 from flask_misaka import Misaka
+
 # imports custom mapping class
 from mapping import Mapping
 from mapping.elements.loops import For, ParFor
 from mapping.elements.stores import Store
 
 # creates server
-app:Flask = Flask(__name__)
+app: Flask = Flask(__name__)
 # makes it markdown compliant
 Misaka(
-    app, # converts app to markdown
-    strikethrough=True, # allows strikethrough notation
-    highlight=True, # allows highlight notation
-    no_indented_code=True, # disables tabs = code notation
+    app,  # converts app to markdown
+    strikethrough=True,  # allows strikethrough notation
+    highlight=True,  # allows highlight notation
+    no_indented_code=True,  # disables tabs = code notation
 )
 
+
 # landing page, serves as example graphical page for now
-@app.route('/')
+@app.route("/")
 def graph():
     # A Simple Example
-    # 
+    #
     # Matrix multiplication: Z[m,n] := A[m,k] B[k,n]
     #
     # Mapping:
@@ -43,38 +47,42 @@ def graph():
     # for n in [0,1)
     # for k in [0,1)
 
-    mapping = Mapping([
-        Store(2, ('A', 'B', 'Z')),
-        For('m', 0, 4),
-        For('k', 0, 2),
-        For('n', 0, 4),
-        Store(1, ('A', 'B', 'Z'), np.uint32(0b11)),
-        For('m', 0, 4),
-        For('n', 0, 4),
-        ParFor('k', 0, 8),
-        Store(0, ('A', 'B', 'Z')),
-        For('m', 0, 1),
-        For('n', 0, 1),
-        For('k', 0, 1)
-    ])
+    mapping = Mapping(
+        [
+            Store(2, ("A", "B", "Z")),
+            For("m", 0, 4),
+            For("k", 0, 2),
+            For("n", 0, 4),
+            Store(1, ("A", "B", "Z"), np.uint32(0b11)),
+            For("m", 0, 4),
+            For("n", 0, 4),
+            ParFor("k", 0, 8),
+            Store(0, ("A", "B", "Z")),
+            For("m", 0, 1),
+            For("n", 0, 1),
+            For("k", 0, 1),
+        ]
+    )
 
     print(mapping)
     print("######")
 
-    other_mapping = Mapping([
-        Store(2, ('A', 'B', 'Z')),
-        For('k', 0, 2),
-        For('m', 0, 2),
-        For('n', 0, 4),
-        Store(1, ('A', 'B', 'Z')),
-        For('m', 0, 8),
-        For('n', 0, 4),
-        ParFor('k', 0, 8),
-        Store(0, ('A', 'B', 'Z')),
-        For('m', 0, 1),
-        For('n', 0, 1),
-        ParFor('k', 0, 1)
-    ])
+    other_mapping = Mapping(
+        [
+            Store(2, ("A", "B", "Z")),
+            For("k", 0, 2),
+            For("m", 0, 2),
+            For("n", 0, 4),
+            Store(1, ("A", "B", "Z")),
+            For("m", 0, 8),
+            For("n", 0, 4),
+            ParFor("k", 0, 8),
+            Store(0, ("A", "B", "Z")),
+            For("m", 0, 1),
+            For("n", 0, 1),
+            ParFor("k", 0, 1),
+        ]
+    )
 
     return render_template(
         "mapping.html",
@@ -82,12 +90,9 @@ def graph():
             mapping.diff(other_mapping),
             other_mapping.diff(mapping),
         ),
-        mappings=(
-            mapping,
-            other_mapping
-        )
+        mappings=(mapping, other_mapping),
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

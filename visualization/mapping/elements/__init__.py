@@ -87,4 +87,4 @@ class Distinguishable:
         Returns:
             A trivial object of type(self)
         """
-        raise NotImplementedError
+        raise NotImplementedError(f"{type(self)} has not implemented blank")

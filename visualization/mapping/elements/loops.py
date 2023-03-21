@@ -115,6 +115,9 @@ class Loop(MappingElement, Distinguishable):
     # testing aid functions #
     #########################
 
+    def blank(self) -> Type[self]:
+        """"""
+
     def __str__(self) -> str:
         """Returns a string representation of the loop"""
         return self._frame.format(

@@ -13,6 +13,7 @@ import numpy as np
 
 # imports all of elements
 from mapping.elements import MappingElement, Distinguishable
+
 # imports classes of elements
 from mapping.elements.loops import Loop, For, ParFor
 from mapping.elements.stores import Store
@@ -164,7 +165,6 @@ class Block:
 
         return new_block
 
-
     def diff(self, other: Block) -> str:
         """Notes the difference between two blocks on the same level"""
 
@@ -300,7 +300,16 @@ class Mapping:
         justified: list[Block] = []
 
         # goes through all the blocks in self
-        
+        block: Block
+        for index, block in enumerate(self.blocks):
+            # justifies against the corresponding block in other
+            justification: Block = block.justify(other.blocks[index])
+            # appends the justified block
+            justified.append(justification)
+
+        # initializes and returns a new mapping
+        return Mapping(justification, self.cycles, self.energy)
+
 
     def diff(self, other: Mapping) -> str:
         """Notes the differences between two mappings"""

@@ -128,7 +128,18 @@ def justify() -> str:
             ParFor("k", 0, 1),
         ]
     )
+    # justifies the mappings against each other
+    mapping = mapping.justify(other_mapping)
+    other_mapping = other_mapping.justify(mapping)
 
+    return render_template(
+        "mapping.html",
+        diffs=(
+            mapping.diff(other_mapping),
+            other_mapping.diff(mapping),
+        ),
+        mappings=(mapping, other_mapping),
+    )
 
 
 if __name__ == "__main__":

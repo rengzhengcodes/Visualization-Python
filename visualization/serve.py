@@ -100,8 +100,7 @@ def basic() -> str:
 
 @app.route("/justify")
 def justify() -> str:
-    """Very crude visual test for the justification function.
-    """
+    """Very crude visual test for the justification function."""
     mapping = Mapping(
         [
             Store(2, ("A", "B", "Z")),

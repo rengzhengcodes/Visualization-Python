@@ -1,11 +1,15 @@
+"""This module acts as a server that creates a basic front-end for this
+mapping visualization library.
+
+Typical use cases:
+    Running this file to create the server.
+"""
+
 # visualization libraries
 from flask import Flask, render_template
 import plotly.express as px
 import pandas as pd
 import numpy as np
-
-# python string to html conversion
-from html import escape
 
 # python markdown to html conversion
 from flask_misaka import Misaka
@@ -28,7 +32,10 @@ Misaka(
 
 # landing page, serves as example graphical page for now
 @app.route("/")
-def graph():
+def graph() -> str:
+    """Serves a webapp on the root address that directly compares 2 mappings
+    written in code.
+    """
     # A Simple Example
     #
     # Matrix multiplication: Z[m,n] := A[m,k] B[k,n]

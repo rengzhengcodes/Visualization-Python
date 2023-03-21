@@ -103,7 +103,7 @@ class Block:
         return tuple(self._children)
 
     @children.setter
-    def set_children(self, orphans: list) -> bool:
+    def children(self, orphans: list) -> bool:
         """Sets the children if and if the Block has no children"""
         # if we already have children, don't mutate
         if self.children:
@@ -116,7 +116,7 @@ class Block:
         return True
 
     @property
-    def loops(self) -> tuple:
+    def loop_dims(self) -> tuple[str]:
         """Returns an ordered list of the dimensions enumerated over"""
         # the list of dimensions
         dims: list = []
@@ -137,28 +137,29 @@ class Block:
 
         returns the copy of self"""
         # the loops in each Block
-        self_loops: tuple = self.loops
-        other_loops: tuple = other.loops
+        self_loop_dims: tuple[str] = self.loop_dims
+        other_loop_dims: tuple[str] = other.loop_dims
 
         # the loops not contained in both sets
-        missing_loops: set = set(self_loops).difference(set(other_loops))
+        missing_loops: set[str] = set(self_loop_dims).difference(set(other_loop_dims))
         # the loops not contained in self
-        missing_loops: set = missing_loops.difference_update(self_loops)
+        missing_loops.difference_update(self_loop_dims)
 
         # represents the new block loop order
-        new_loops: list = list(self_loops)
+        new_loops: list[Loop] = list(self.children)
 
         # inserts the missing loops in the correct relative positions
         loop: Loop
         for loop in missing_loops:
             # finds its index in other
-            other_index: int = other_loops.index(loop)
+            other_index: int = other_loop_dims.index(loop)
 
             # inserts into new loop at index
-            new_loops.insert(other_index, loop.blank())
+            new_loops.insert(other_index, other.children[other_index].blank())
 
         # the new block to be returned
         new_block: Block = Block(self.buffer)
+        print(new_loops)
 
         # sets its children
         new_block.children = new_loops
@@ -263,6 +264,16 @@ class Mapping:
     def blocks(self) -> tuple[Block]:
         """Returns a tuple of all the blocks currently contained"""
         return tuple(self._blocks)
+    
+    @blocks.setter
+    def blocks(self, blocks: list[Block]) -> None:
+        """Sets new blocks if there are no current blocks"""
+        if not self.blocks:
+            for block in blocks:
+                if isinstance(block, Block):
+                    self._blocks.append(block)
+                else:
+                    raise TypeError(f"Expected type Blocks, not {type(block)}")
 
     ################################
     # CHARACTERISTIC ACCESSOR FXNS #
@@ -274,7 +285,7 @@ class Mapping:
         return self._cycles
 
     @cycles.setter
-    def set_cycles(self, cycles: int) -> None:
+    def cycles(self, cycles: int) -> None:
         """Sets the number of cycles"""
         self._cycles = cycles
 
@@ -284,7 +295,7 @@ class Mapping:
         return self._energy
 
     @energy.setter
-    def set_energy(self, energy: float) -> None:
+    def energy(self, energy: float) -> None:
         """Sets the energy cost of the mapping"""
         self._energy = energy
 
@@ -307,8 +318,12 @@ class Mapping:
             # appends the justified block
             justified.append(justification)
 
-        # initializes and returns a new mapping
-        return Mapping(justification, self.cycles, self.energy)
+        # initializes a new mapping
+        out: Mapping = Mapping([], self.cycles, self.energy)
+        # loads in blocks
+        out.blocks = justified
+
+        return out
 
     def diff(self, other: Mapping) -> str:
         """Notes the differences between two mappings"""

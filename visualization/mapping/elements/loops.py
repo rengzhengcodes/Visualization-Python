@@ -6,6 +6,9 @@ ForLoop = For('X', 0, 4)
 # future annotations
 from __future__ import annotations
 
+# allows typing for self
+from typing import Self
+
 # imports super classes
 from mapping.elements import MappingElement, Distinguishable
 
@@ -24,7 +27,7 @@ class Loop(MappingElement, Distinguishable):
     # Notes this is a generic loop
     _loop_type: str = "loop"
 
-    def __init__(self, dim: str, start: int, end: int):
+    def __init__(self, dim: str, start: int, end: int) -> None:
         """Inits Loop with dimension, start, and end"""
         assert start < end, f"start:{start} >= end:{end}"
         self._dim: str = dim
@@ -115,8 +118,10 @@ class Loop(MappingElement, Distinguishable):
     # testing aid functions #
     #########################
 
-    def blank(self) -> Type[self]:
-        """"""
+    def blank(self) -> Self:
+        """Returns a trivial loop over dim of the form Loop dim in [0, 1)"""
+
+        return type(self)(self.dim, 0, 1)
 
     def __str__(self) -> str:
         """Returns a string representation of the loop"""

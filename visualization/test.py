@@ -55,3 +55,5 @@ print("# Mapping1 in comparison to Mapping2")
 print(mapping1.diff(mapping2))
 print("# Mapping2 in comparison to Mapping1")
 print(mapping2.diff(mapping1))
+
+print(ParFor("m", 0, 423).blank())

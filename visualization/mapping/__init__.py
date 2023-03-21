@@ -149,7 +149,7 @@ class Block:
         new_loops: list[Loop] = list(self.children)
 
         # inserts the missing loops in the correct relative positions
-        loop: Loop
+        loop: str
         for loop in missing_loops:
             # finds its index in other
             other_index: int = other_loop_dims.index(loop)
@@ -264,7 +264,7 @@ class Mapping:
     def blocks(self) -> tuple[Block]:
         """Returns a tuple of all the blocks currently contained"""
         return tuple(self._blocks)
-    
+
     @blocks.setter
     def blocks(self, blocks: list[Block]) -> None:
         """Sets new blocks if there are no current blocks"""

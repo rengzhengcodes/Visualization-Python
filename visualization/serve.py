@@ -132,6 +132,10 @@ def justify() -> str:
     mapping = mapping.justify(other_mapping)
     other_mapping = other_mapping.justify(mapping)
 
+    print(mapping)
+    print("#######")
+    print(other_mapping)
+
     return render_template(
         "mapping.html",
         diffs=(

@@ -77,3 +77,14 @@ class Distinguishable:
             A string with color-agnostic representation of the differences.
         """
         raise NotImplementedError(f"{type(self)} has not implemented diffstring")
+
+    @abstractmethod
+    def blank(self) -> Distinguishable:
+        """Creates a "blank" version of the element, signifying a trivial
+        implementation of the type element (i.e. does not affect performance
+        if omitted from notation).
+
+        Returns:
+            A trivial object of type(self)
+        """
+        raise NotImplementedError

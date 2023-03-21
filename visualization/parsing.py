@@ -18,6 +18,7 @@ def parse(file: TextIOWrapper) -> list:
     """
     # the entire file
     raw: str = file.read()
+    
     """
     Breaks it up by mapping, which is in 4 line chunks. Source: https://stackoverflow.com/questions/26459838/splitting-a-string-every-n-lines-using-regex
     (?:     # Start a non-capturing group that matches...

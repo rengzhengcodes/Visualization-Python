@@ -104,22 +104,23 @@ class Block:
         # if we already have children, don't mutate
         if self.children:
             return False
+
         # otherwise, adopt the orphans
-        else:
-            for orphan in orphans:
-                self.append(orphan)
-            return True
+        for orphan in orphans:
+            self.append(orphan)
+
+        return True
 
     @property
     def loops(self) -> tuple:
         """Returns an ordered list of the dimensions enumerated over"""
         # the list of dimensions
         dims: list = []
-        
+
         # pulls out the children and their dimensions in order
         for child in self.children:
             dims.append(child.dim)
-        
+
         return tuple(dims)
 
     ########################
@@ -128,7 +129,7 @@ class Block:
 
     def justify(self, other: Block) -> Block:
         """Fills in the missing dims being iterated over from the other Block
-        
+
         returns a new block"""
         # the loops in each Block
         self_loops: tuple = self.loops
@@ -146,8 +147,6 @@ class Block:
         loop: str
         for loop in missing_loops:
             pass
-
-
 
     def diff(self, other: Block) -> str:
         """Notes the difference between two blocks on the same level"""
@@ -235,7 +234,7 @@ class Mapping:
     def blocks(self) -> tuple[Block]:
         """Returns a tuple of all the blocks currently contained"""
         return tuple(self._blocks)
-    
+
     ################################
     # CHARACTERISTIC ACCESSOR FXNS #
     ################################
@@ -244,22 +243,21 @@ class Mapping:
     def cycles(self) -> int:
         """Gets the number of cycles"""
         return self._cycles
-    
+
     @cycles.setter
     def set_cycles(self, cycles: int) -> None:
         """Sets the number of cycles"""
         self._cycles = cycles
-    
+
     @property
     def energy(self) -> float:
         """Gets the energy cost of the mapping"""
         return self._energy
-    
+
     @energy.setter
     def set_energy(self, energy: float) -> None:
         """Sets the energy cost of the mapping"""
         self._energy = energy
-
 
     ###################
     # COMPARISON FXNS #

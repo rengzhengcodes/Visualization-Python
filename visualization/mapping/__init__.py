@@ -292,6 +292,16 @@ class Mapping:
     # COMPARISON FXNS #
     ###################
 
+    def justify(self, other: Mapping) -> Mapping:
+        """Returns a new mapping where all the blocks in self have been justified
+        against other."""
+
+        # new blocks the new mapping will have
+        justified: list[Block] = []
+
+        # goes through all the blocks in self
+        
+
     def diff(self, other: Mapping) -> str:
         """Notes the differences between two mappings"""
 

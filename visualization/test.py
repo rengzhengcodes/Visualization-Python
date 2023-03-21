@@ -1,3 +1,7 @@
+"""Run this module to conduct a quick and dirty visual inspection of all the
+mapping functionality.
+"""
+
 # imports numpy
 import numpy as np
 
@@ -39,7 +43,7 @@ mapping2 = Mapping(
         Store(0, ("A", "B", "Z")),
         For("n", 0, 1),
         For("k", 0, 1),
-        ParFor("m", 0, 1)
+        ParFor("m", 0, 1),
     ]
 )
 

@@ -1,3 +1,7 @@
+"""Run this module to conduct a quick and dirty visual inspection of all the
+mapping functionality.
+"""
+
 # imports numpy
 import numpy as np
 
@@ -37,9 +41,9 @@ mapping2 = Mapping(
         For("n", 0, 4),
         ParFor("k", 0, 8),
         Store(0, ("A", "B", "Z")),
-        For("m", 0, 1),
         For("n", 0, 1),
         For("k", 0, 1),
+        ParFor("m", 0, 1),
     ]
 )
 
@@ -51,3 +55,5 @@ print("# Mapping1 in comparison to Mapping2")
 print(mapping1.diff(mapping2))
 print("# Mapping2 in comparison to Mapping1")
 print(mapping2.diff(mapping1))
+
+print(ParFor("m", 0, 423).blank())

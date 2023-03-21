@@ -1,5 +1,7 @@
 # gets the classes we constructed
-from mappingelems import *
+from mapping.elements.stores import Store
+from mapping.elements.loops import For, ParFor
+from mapping import Block, Mapping, MappingElement
 
 # for typehinting
 from io import TextIOWrapper
@@ -18,25 +20,28 @@ def parse(file: TextIOWrapper) -> list:
     """
     # the entire file
     raw: str = file.read()
-    """
-    Breaks it up by mapping, which is in 4 line chunks. Source: https://stackoverflow.com/questions/26459838/splitting-a-string-every-n-lines-using-regex
-    (?:     # Start a non-capturing group that matches...
-    ^       # (from the start of a line)
-    .*      # any number of non-newline characters
-    $       # (until the end of the line).
-    \n?     # Then it matches a newline character, if present.
-    ){4}  # It repeats this three times. If there are less than three lines
-            # at the end of the string.
-    """
-    mapping_texts: list = re.compile("(?:^.*$\n?){4}", re.M).findall(raw)
-    """
-    Splits into separate lines.
+    
+    ###
+    # Breaks it up by mapping, which is in 4 line chunks. Source: https://stackoverflow.com/questions/26459838/splitting-a-string-every-n-lines-using-regex
+    # (?:     # Start a non-capturing group that matches...
+    # ^       # (from the start of a line)
+    # .*      # any number of non-newline characters
+    # $       # (until the end of the line).
+    # \n?     # Then it matches a newline character, if present.
+    # ){4}  # It repeats this three times. If there are less than three lines
+    #         # at the end of the string.
+    ###
 
-    [{dimension},{start},{end};]*  // these are the loops in the mapping (from innermost to outermost)
-    [{storage_level}]*             // these are the storage levels
-    [{bypass_mask}]*               // read from right to left. each one is a dataspace (1 means stored)
-    [{cycles};{energy};]
-    """
+    mapping_texts: list = re.compile("(?:^.*$\n?){4}", re.M).findall(raw)
+    
+    ###
+    # Splits into separate lines.
+
+    # [{dimension},{start},{end};]*  // these are the loops in the mapping (from innermost to outermost)
+    # [{storage_level}]*             // these are the storage levels
+    # [{bypass_mask}]*               // read from right to left. each one is a dataspace (1 means stored)
+    # [{cycles};{energy};]
+    ###
     mapping_texts = [
         [
             dataspace.rstrip(
@@ -71,7 +76,7 @@ def parse(file: TextIOWrapper) -> list:
         for Lval in range(len(storage_levels) - 1, -1, -1):
             mapping.insert(
                 storage_levels[Lval],
-                Store(Lval, {"A", "B", "Z"}),  # don't know what dataspace it stores yet
+                Store(Lval, ("A", "B", "Z")),  # don't know what dataspace it stores yet
             )
 
         # bypass masks, read left to right TODO::implement bypass descriptors

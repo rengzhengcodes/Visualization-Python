@@ -6,6 +6,9 @@ ForLoop = For('X', 0, 4)
 # future annotations
 from __future__ import annotations
 
+# allows typing for self
+from typing import Self
+
 # imports super classes
 from mapping.elements import MappingElement, Distinguishable
 
@@ -24,7 +27,7 @@ class Loop(MappingElement, Distinguishable):
     # Notes this is a generic loop
     _loop_type: str = "loop"
 
-    def __init__(self, dim: str, start: int, end: int):
+    def __init__(self, dim: str, start: int, end: int) -> None:
         """Inits Loop with dimension, start, and end"""
         assert start < end, f"start:{start} >= end:{end}"
         self._dim: str = dim
@@ -62,7 +65,7 @@ class Loop(MappingElement, Distinguishable):
     # COMPARISON FXNS #
     ###################
 
-    def diffstring(self, other: Loop) -> str:
+    def diff(self, other: Loop) -> str:
         """Notes the differences between each loop"""
         if not isinstance(other, Loop):
             raise TypeError(f"{type(other)} cannot be compared with loops")
@@ -111,20 +114,14 @@ class Loop(MappingElement, Distinguishable):
 
         return self._frame.format(loop_type=loop_type, dim=dim, start=start, end=end)
 
-
-class For(Loop):
-    """A mapping element representing a serial loop."""
-
-    # string representation of what type of loop this is
-    _loop_type = "for"
-
-    def __init__(self, dim: str, start: int, end: int):
-        """Inits the serial loop."""
-        super().__init__(dim, start, end)
-
     #########################
     # testing aid functions #
     #########################
+
+    def blank(self) -> Self:
+        """Returns a trivial loop over dim of the form Loop dim in [0, 1)"""
+
+        return type(self)(self.dim, 0, 1)
 
     def __str__(self) -> str:
         """Returns a string representation of the loop"""
@@ -133,22 +130,15 @@ class For(Loop):
         )
 
 
+class For(Loop):
+    """A mapping element representing a serial loop."""
+
+    # string representation of what type of loop this is
+    _loop_type = "for"
+
+
 class ParFor(Loop):
     """A mapping element representing a parallel loop."""
 
     # string representation of what type of loop this is
     _loop_type = "par-for"
-
-    def __init__(self, dim: str, start: int, end: int):
-        """Inits the parallel loop."""
-        super().__init__(dim, start, end)
-
-    #########################
-    # testing aid functions #
-    #########################
-
-    def __str__(self):
-        """Returns a stirng representation of the parallel for loop."""
-        return self._frame.format(
-            loop_type=self._loop_type, dim=self._dim, start=self._start, end=self._end
-        )

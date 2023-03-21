@@ -12,7 +12,11 @@ from typing import Union, Iterable
 import numpy as np
 
 # imports all of elements
-from mapping.elements import MappingElement, Distinguishable, stores
+from mapping.elements import MappingElement, Distinguishable
+
+# imports classes of elements
+from mapping.elements.loops import Loop, For, ParFor
+from mapping.elements.stores import Store
 
 
 class Block:
@@ -29,9 +33,9 @@ class Block:
         children: The elements that directly belong to this block.
     """
 
-    def __init__(self, buffer: stores.Store) -> None:
+    def __init__(self, buffer: Store) -> None:
         """Inits the Block with the buffer its contained in and a list"""
-        self._buffer: stores.Store = buffer
+        self._buffer: Store = buffer
         self._children: list[MappingElement] = []
 
     def flatten(self) -> tuple:
@@ -65,7 +69,7 @@ class Block:
         """Appends a new Block or non-store MappingElement to the list"""
 
         # checks for stores that should be in Blocks
-        if isinstance(element, stores.Store):
+        if isinstance(element, Store):
             raise TypeError("Inserted a Store. This should be inside a new Block")
 
         # checks we are appending a MappingElement
@@ -80,7 +84,7 @@ class Block:
     ########################
 
     @property
-    def buffer(self) -> stores.Store:
+    def buffer(self) -> Store:
         """Returns the buffer the Block represents"""
         return self._buffer
 
@@ -98,9 +102,72 @@ class Block:
         """Returns a static copy of all the elements"""
         return tuple(self._children)
 
+    @children.setter
+    def children(self, orphans: list) -> bool:
+        """Sets the children if and if the Block has no children"""
+        # if we already have children, don't mutate
+        if self.children:
+            return False
+
+        # otherwise, adopt the orphans
+        for orphan in orphans:
+            self.append(orphan)
+
+        return True
+
+    @property
+    def loop_dims(self) -> tuple[str]:
+        """Returns an ordered list of the dimensions enumerated over"""
+        # the list of dimensions
+        dims: list = []
+
+        # pulls out the children and their dimensions in order
+        for child in self.children:
+            dims.append(child.dim)
+
+        return tuple(dims)
+
     ########################
     # COMPARISON FUNCTIONS #
     ########################
+
+    def justify(self, other: Block) -> Block:
+        """Inserts into a copy of self the dims that are located in this Block
+        but not the other Block.
+
+        returns the copy of self"""
+        # the loops in each Block
+        self_loop_dims: tuple[str] = self.loop_dims
+        other_loop_dims: tuple[str] = other.loop_dims
+
+        # the loops not contained in self
+        missing_loops: list = []
+        # calculates the loops not in self
+        dim: str
+        for dim in other_loop_dims:
+            if dim not in self_loop_dims:
+                missing_loops.append(dim)
+
+        # represents the new block loop order
+        new_loops: list[Loop] = list(self.children)
+
+        # inserts the missing loops in the correct relative positions
+        loop: str
+        for loop in missing_loops:
+            # finds its index in other
+            other_index: int = other_loop_dims.index(loop)
+
+            # inserts into new loop at index
+            new_loops.insert(other_index, other.children[other_index].blank())
+
+        # the new block to be returned
+        new_block: Block = Block(self.buffer)
+        print(new_loops)
+
+        # sets its children
+        new_block.children = new_loops
+
+        return new_block
 
     def diff(self, other: Block) -> str:
         """Notes the difference between two blocks on the same level"""
@@ -110,7 +177,7 @@ class Block:
             raise TypeError(f"Cannot compare {type(other)} to Block.")
 
         # checks the buffers are of the same level
-        assert self.level == other.level, f"Cannot compare blocks between levels"
+        assert self.level == other.level, "Cannot compare blocks between levels"
 
         ## synthesizes the diffstring ##
 
@@ -126,7 +193,7 @@ class Block:
             # checks that the child is Distinguishable
             if isinstance(child, Distinguishable):
                 # if so, check the difference between the corresponding children
-                out_string += f"\t{child.diffstring(other_children[index])}\n"
+                out_string += f"\t{child.diff(other_children[index])}\n"
 
             else:
                 # otherwise, just add the child
@@ -154,8 +221,20 @@ class Block:
 class Mapping:
     """Represents a hardware mapping."""
 
-    def __init__(self, elements: Iterable[MappingElement]) -> None:
-        """Initializes the Mapping, in blocks format"""
+    def __init__(
+        self,
+        elements: Iterable[MappingElement],
+        cycles: int = None,
+        energy: float = None,
+    ) -> None:
+        """Initializes the Mapping, in blocks format
+
+        Attributes:
+            cycles: The number of cycles the mapping takes to do the operation.
+            energy: The amount of energy needed to do the computation.
+        """
+        self._cycles: int = cycles
+        self._energy: float = energy
 
         # the indentation blocks in the Mapping
         self._blocks: list[Block] = []
@@ -166,7 +245,7 @@ class Mapping:
         # goes through all inputted elements
         for element in elements:
             # checks if it's a store, if it is start a new Block
-            if isinstance(element, stores.Store):
+            if isinstance(element, Store):
                 # creates the new block
                 current_block: Block = Block(element)
                 # appends it to the list of blocks
@@ -189,9 +268,65 @@ class Mapping:
         """Returns a tuple of all the blocks currently contained"""
         return tuple(self._blocks)
 
+    @blocks.setter
+    def blocks(self, blocks: list[Block]) -> None:
+        """Sets new blocks if there are no current blocks"""
+        if not self.blocks:
+            for block in blocks:
+                if isinstance(block, Block):
+                    self._blocks.append(block)
+                else:
+                    raise TypeError(f"Expected type Blocks, not {type(block)}")
+
+    ################################
+    # CHARACTERISTIC ACCESSOR FXNS #
+    ################################
+
+    @property
+    def cycles(self) -> int:
+        """Gets the number of cycles"""
+        return self._cycles
+
+    @cycles.setter
+    def cycles(self, cycles: int) -> None:
+        """Sets the number of cycles"""
+        self._cycles = cycles
+
+    @property
+    def energy(self) -> float:
+        """Gets the energy cost of the mapping"""
+        return self._energy
+
+    @energy.setter
+    def energy(self, energy: float) -> None:
+        """Sets the energy cost of the mapping"""
+        self._energy = energy
+
     ###################
     # COMPARISON FXNS #
     ###################
+
+    def justify(self, other: Mapping) -> Mapping:
+        """Returns a new mapping where all the blocks in self have been justified
+        against other."""
+
+        # new blocks the new mapping will have
+        justified: list[Block] = []
+
+        # goes through all the blocks in self
+        block: Block
+        for index, block in enumerate(self.blocks):
+            # justifies against the corresponding block in other
+            justification: Block = block.justify(other.blocks[index])
+            # appends the justified block
+            justified.append(justification)
+
+        # initializes a new mapping
+        out: Mapping = Mapping([], self.cycles, self.energy)
+        # loads in blocks
+        out.blocks = justified
+
+        return out
 
     def diff(self, other: Mapping) -> str:
         """Notes the differences between two mappings"""

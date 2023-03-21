@@ -130,7 +130,7 @@ def justify() -> str:
     )
     # justifies the mappings against each other
     mapping = mapping.justify(other_mapping)
-    other_mapping = other_mapping.justify(mapping)
+    # other_mapping = other_mapping.justify(mapping)
 
     print(mapping)
     print("#######")

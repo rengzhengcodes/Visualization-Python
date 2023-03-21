@@ -140,10 +140,13 @@ class Block:
         self_loop_dims: tuple[str] = self.loop_dims
         other_loop_dims: tuple[str] = other.loop_dims
 
-        # the loops not contained in both sets
-        missing_loops: set[str] = set(self_loop_dims).difference(set(other_loop_dims))
         # the loops not contained in self
-        missing_loops.difference_update(self_loop_dims)
+        missing_loops: list = []
+        # calculates the loops not in self
+        dim: str
+        for dim in other_loop_dims:
+            if dim not in self_loop_dims:
+                missing_loops.append(dim)
 
         # represents the new block loop order
         new_loops: list[Loop] = list(self.children)

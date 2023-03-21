@@ -34,13 +34,20 @@
             <!-- The first mapping -->
             <div id="mapping0" class="cell medium-6">
                 <h1>Mapping 0</h1>
-                <div class="pre">{{ diffs[0]|markdown }}</div>
+                <h2>Cycles: {{ mappings[0].cycles }}</h2>
+                <h2>Energy: {{ mappings[0].energy }}</h2>
+                <h2>Representation:</h2>
+                {% for line in diffs[0].split('\n') %}
+                    <div class="pre mapping_line">{{ line |markdown }}</div>
+                {% endfor %}
             </div>
 
             <!-- All other mappings -->
             <div id="mapping1" class="cell medium-6">
                 <h1>Mapping 1</h1>
-                <div class="pre">{{ diffs[1]|markdown }}</div>
+                <h2>Cycles: {{ mappings[1].cycles }}</h2>
+                <h2>Energy: {{ mappings[1].energy }}</h2>
+                <div class="pre mapping_line">{{ diffs[1]|markdown }}</div>
             </div>
         </div>
 

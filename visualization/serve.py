@@ -7,7 +7,6 @@ import numpy as np
 from html import escape
 # python markdown to html conversion
 from flask_misaka import Misaka
-from flaskext.markdown import Markdown
 # imports custom mapping class
 from mapping import Mapping
 from mapping.elements.loops import For, ParFor
@@ -16,7 +15,12 @@ from mapping.elements.stores import Store
 # creates server
 app:Flask = Flask(__name__)
 # makes it markdown compliant
-Misaka(app, strikethrough=True, highlight=True)
+Misaka(
+    app, # converts app to markdown
+    strikethrough=True, # allows strikethrough notation
+    highlight=True, # allows highlight notation
+    no_indented_code=True, # disables tabs = code notation
+)
 
 # landing page, serves as example graphical page for now
 @app.route('/')
@@ -77,6 +81,10 @@ def graph():
         diffs=(
             mapping.diff(other_mapping),
             other_mapping.diff(mapping),
+        ),
+        mappings=(
+            mapping,
+            other_mapping
         )
     )
 

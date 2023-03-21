@@ -1,13 +1,3 @@
-/* marks difference between the two mappings */
-span.diff {
-    /* color stuff */
-    color:red;
-
-    /* whitespace stuff */
-    margin:0;
-    padding:0;
-}
-
 /* mapping format */
 .mapping_line {
     /* font stuff */
@@ -18,8 +8,8 @@ span.diff {
     /* whitespace stuff */
     margin:0;
     padding:0;
-}
-.mapping_line > span {
+    height:fit-content;
+
     /* makes font not 0 for actual content */
     font-size: large;
 }
@@ -32,6 +22,6 @@ div.pre {
 }
 
 div.pre > p {
-    margin: 0;
-    padding: 0;
+    margin:0;
+    padding:0;
 }

@@ -154,7 +154,7 @@ class Block:
             other_index: int = other_loops.index(loop)
 
             # inserts into new loop at index
-            new_loops.insert(other_index, loop)
+            new_loops.insert(other_index, loop.blank())
 
         # the new block to be returned
         new_block: Block = Block(self.buffer)

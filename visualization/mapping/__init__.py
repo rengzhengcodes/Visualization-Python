@@ -310,7 +310,6 @@ class Mapping:
         # initializes and returns a new mapping
         return Mapping(justification, self.cycles, self.energy)
 
-
     def diff(self, other: Mapping) -> str:
         """Notes the differences between two mappings"""
 

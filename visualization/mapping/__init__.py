@@ -200,8 +200,20 @@ class Block:
 class Mapping:
     """Represents a hardware mapping."""
 
-    def __init__(self, elements: Iterable[MappingElement]) -> None:
-        """Initializes the Mapping, in blocks format"""
+    def __init__(
+        self,
+        elements: Iterable[MappingElement],
+        cycles: int = None,
+        energy: float = None,
+    ) -> None:
+        """Initializes the Mapping, in blocks format
+
+        Attributes:
+            cycles: The number of cycles the mapping takes to do the operation.
+            energy: The amount of energy needed to do the computation.
+        """
+        self._cycles: int = cycles
+        self._energy: float = energy
 
         # the indentation blocks in the Mapping
         self._blocks: list[Block] = []

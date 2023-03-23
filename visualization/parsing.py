@@ -9,6 +9,7 @@ from io import TextIOWrapper
 # for finding stuff
 import regex as re
 
+
 def isolate_mappings(raw: str) -> list[str]:
     """Takes a string of the form found in testdata.txt and breaks it into a list
     of strings that only contain the information for one mapping.
@@ -16,12 +17,12 @@ def isolate_mappings(raw: str) -> list[str]:
     Attributes:
         raw: A string representing the mappings the user wants the program to
         compare
-    
+
     Returns:
         A list of strings, where each string is exactly 1 mapping.
     """
     ###
-    # Breaks it up by mapping, which is in 4 line chunks. 
+    # Breaks it up by mapping, which is in 4 line chunks.
     # Source: https://stackoverflow.com/questions/26459838/splitting-a-string-every-n-lines-using-regex
     # (?:     # Start a non-capturing group that matches...
     # ^       # (from the start of a line)
@@ -38,10 +39,10 @@ def isolate_mappings(raw: str) -> list[str]:
 
 
 def preprocess_mappings(isolated: list[str]) -> list[tuple[tuple]]:
-    """Takes an output from isolate_mappings and then forms a list of tuples of 
+    """Takes an output from isolate_mappings and then forms a list of tuples of
     tuples. Each outer tuple has 4 fields:
     [
-        loops,          // these are the loops in the mapping (from innermost to outermost)      
+        loops,          // these are the loops in the mapping (from innermost to outermost)
         storage_levels, // these are the storage levels
         bypass_masks,   // read from right to left. one per level (1 means stored in level)
         performance_metrics
@@ -58,16 +59,23 @@ def preprocess_mappings(isolated: list[str]) -> list[tuple[tuple]]:
     # processes each line of all isolated mappings and then splits the separate
     # components per line
     preprocessed_mappings: list = [
-        tuple([
-            tuple(filter(
-                bool,                       # keep split info if non-empty
-                tuple(dataline.split(';'))  # splits separate components of line
-            ))
-            for dataline in filter(
-                bool,                       # keeps line if non-empty
-                isolated_mapping.split('\n')# splits each line in mapping string
-            )
-        ]) for isolated_mapping in isolated
+        tuple(
+            [
+                tuple(
+                    filter(
+                        bool,  # keep split info if non-empty
+                        tuple(
+                            dataline.split(";")
+                        ),  # splits separate components of line
+                    )
+                )
+                for dataline in filter(
+                    bool,  # keeps line if non-empty
+                    isolated_mapping.split("\n"),  # splits each line in mapping string
+                )
+            ]
+        )
+        for isolated_mapping in isolated
     ]
 
     return preprocessed_mappings

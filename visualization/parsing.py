@@ -108,10 +108,10 @@ def parse_file(file: TextIOWrapper) -> list:
     mappings: list = []
 
     # goes through all the pre processed mappings
-    loops: tuple[str]  # all the loops in a mapping
-    storage_indices: tuple[str]  # the index of the first loop a Store contains
-    bypass_masks: tuple[str]  # the bypass masks per Store
-    metrics: tuple[str]  # mapping performance data
+    loops: tuple[str]           # all the loops in a mapping
+    storage_indices: tuple[str] # the index of the first loop a Store contains
+    bypass_masks: tuple[str]    # the bypass masks per Store
+    metrics: tuple[str]         # mapping performance data
     for [loops, storage_indices, bypass_masks, metrics] in preprocessed_mappings:
         # stores the master mapping structure
         mapping: list = []

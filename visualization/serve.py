@@ -89,7 +89,7 @@ def basic() -> str:
     )
 
     return render_template(
-        "mapping.html",
+        "mapping_to_mapping.html",
         diffs=(
             mapping.diff(other_mapping),
             other_mapping.diff(mapping),
@@ -136,7 +136,7 @@ def justify() -> str:
     print(other_mapping)
 
     return render_template(
-        "mapping.html",
+        "mapping_to_mapping.html",
         diffs=(
             mapping.diff(other_mapping),
             other_mapping.diff(mapping),
@@ -184,7 +184,7 @@ def justify_complex():
     print(other_mapping)
 
     return render_template(
-        "mapping.html",
+        "mapping_to_mapping.html",
         diffs=(
             mapping.diff(other_mapping),
             other_mapping.diff(mapping),

@@ -99,10 +99,10 @@ def parse_file(file: TextIOWrapper) -> list:
     mappings: list = []
 
     # goes through all the preprocessed mappings
-    loops: tuple[str]           # all the loops in a mapping
-    storage_indices: tuple[str] # the index of the first loop a Store contains
-    bypass_masks: tuple[str]    # the bypass masks per Store
-    metrics: tuple[str]         # mapping performance data
+    loops: tuple[str]  # all the loops in a mapping
+    storage_indices: tuple[str]  # the index of the first loop a Store contains
+    bypass_masks: tuple[str]  # the bypass masks per Store
+    metrics: tuple[str]  # mapping performance data
     for loops, storage_indices, bypass_masks, metrics in preprocess_mappings(
         # isolates each mapping in the raw data
         isolate_mappings(
@@ -139,10 +139,11 @@ def parse_file(file: TextIOWrapper) -> list:
                 # instantiates the corresponding Store
                 Store(
                     # default variables
-                    store_level, ("A", "B", "Z"),
+                    store_level,
+                    ("A", "B", "Z"),
                     # grabs the bypass corresponding to this Store
-                    np.uint32(bypass_masks[store_level])
-            ),
+                    np.uint32(bypass_masks[store_level]),
+                ),
             )
 
         # pulls out cycles and energy data

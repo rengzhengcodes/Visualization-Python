@@ -80,7 +80,7 @@ def basic() -> str:
             Store(1, ("A", "B", "Z")),
             For("m", 0, 8),
             For("n", 0, 4),
-            ParFor("k", 0, 8),
+            For("k", 0, 8),
             Store(0, ("A", "B", "Z")),
             For("m", 0, 1),
             For("n", 0, 1),

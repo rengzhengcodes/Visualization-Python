@@ -9,6 +9,33 @@ from io import TextIOWrapper
 # for finding stuff
 import regex as re
 
+def isolate_mappings(raw: str) -> list[str]:
+    """Takes a string of the form found in testdata.txt and breaks it into a list
+    of strings that only contain the information for one mapping.
+
+    Attributes:
+        raw: A string representing the mappings the user wants the program to
+        compare
+    
+    Returns:
+        A list of strings, where each string is exactly 1 mapping.
+    """
+    ###
+    # Breaks it up by mapping, which is in 4 line chunks. 
+    # Source: https://stackoverflow.com/questions/26459838/splitting-a-string-every-n-lines-using-regex
+    # (?:     # Start a non-capturing group that matches...
+    # ^       # (from the start of a line)
+    # .*      # any number of non-newline characters
+    # $       # (until the end of the line).
+    # \n?     # Then it matches a newline character, if present.
+    # ){4}  # It repeats this three times. If there are less than three lines
+    #         # at the end of the string.
+    ###
+
+    mapping_texts: list = re.compile("(?:^.*$\n?){4}", re.M).findall(raw)
+
+    return mapping_texts
+
 
 def parse(file: TextIOWrapper) -> list:
     """
@@ -20,19 +47,6 @@ def parse(file: TextIOWrapper) -> list:
     """
     # the entire file
     raw: str = file.read()
-    
-    ###
-    # Breaks it up by mapping, which is in 4 line chunks. Source: https://stackoverflow.com/questions/26459838/splitting-a-string-every-n-lines-using-regex
-    # (?:     # Start a non-capturing group that matches...
-    # ^       # (from the start of a line)
-    # .*      # any number of non-newline characters
-    # $       # (until the end of the line).
-    # \n?     # Then it matches a newline character, if present.
-    # ){4}  # It repeats this three times. If there are less than three lines
-    #         # at the end of the string.
-    ###
-
-    mapping_texts: list = re.compile("(?:^.*$\n?){4}", re.M).findall(raw)
     
     ###
     # Splits into separate lines.
@@ -92,6 +106,5 @@ def parse(file: TextIOWrapper) -> list:
 
 
 if __name__ == "__main__":
-    for mapping in parse(open("testdata.txt")):
+    for mapping in isolate_mappings(open("testdata.txt").read()):
         print(mapping)
-        print()

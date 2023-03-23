@@ -4,19 +4,19 @@ The file is of the form {{INSERT DESCRIPTION HERE}}
 Typical use case:
     mappings: list[Mapping] = parse_file(open("path/to/file"))
 """
+# for typehinting
+from io import TextIOWrapper
+
 # imports numpy for bypass masks
 import numpy as np
+
+# for finding stuff
+import regex as re
 
 # gets the classes we constructed
 from mapping.elements.stores import Store
 from mapping.elements.loops import For
 from mapping import Mapping
-
-# for typehinting
-from io import TextIOWrapper
-
-# for finding stuff
-import regex as re
 
 
 def isolate_mappings(raw: str) -> list[str]:
@@ -139,7 +139,7 @@ def parse_file(file: TextIOWrapper) -> list:
         # we don't need to worry about later elements shifting in list.
         store_level: int  # index we're at in iteration, corresponds to Store level
         loop_index: int  # the index of the loop this Store first contains
-        for store_level, loop_index in reversed(enumerate(storage_indices)):
+        for store_level, loop_index in reversed(tuple(enumerate(storage_indices))):
             # the bypass corresponding to this Store, casted for Store instantiation
             bypass: np.uint32 = np.uint32(bypass_masks[store_level])
             mapping.insert(
@@ -162,7 +162,8 @@ def parse_file(file: TextIOWrapper) -> list:
 
 if __name__ == "__main__":
     # isolates mappings in test input
-    iso: list[str] = isolate_mappings(open("testdata.txt").read())
+    with open("testdata.txt", "r", encoding="utf-8") as testdata:
+        iso: list[str] = isolate_mappings(testdata.read())
     # test prints
     for m in iso:
         print(m)

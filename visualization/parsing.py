@@ -77,7 +77,7 @@ def preprocess_mappings(isolated: list[str]) -> list[tuple[tuple]]:
                 if component
             )
             # processes dataline if not empty line from split
-            for dataline in isolated.split("\n")
+            for dataline in isolated_mapping.split("\n")
             if dataline
         )
         # goes through all mappings

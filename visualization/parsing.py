@@ -114,9 +114,9 @@ def parse_file(file: TextIOWrapper) -> list:
     # goes through all the pre processed mappings
     loops: tuple[str]  # all the loops in a mapping
     storage_indices: tuple[str]  # the index of the first loop a Store contains
-    bypass_masks: tuple[str]  # the
-    data: tuple[str]
-    for [loops, storage_indices, bypass_masks, data] in preprocessed_mappings:
+    bypass_masks: tuple[str]  # the bypass masks per Store
+    metrics: tuple[str]  # mapping performance data
+    for [loops, storage_indices, bypass_masks, metrics] in preprocessed_mappings:
         # stores the master mapping structure
         mapping: list = []
 
@@ -149,7 +149,13 @@ def parse_file(file: TextIOWrapper) -> list:
                 Store(store_level, ("A", "B", "Z"), bypass),
             )
 
-        mappings.append(Mapping(mapping))
+        # pulls out cycles and energy data
+        cycles, energy = metrics
+        # ints the metrics
+        cycles: int = int(cycles)
+        energy: int = int(energy)
+
+        mappings.append(Mapping(mapping, cycles, energy))
 
     return mappings
 
@@ -158,7 +164,7 @@ if __name__ == "__main__":
     # isolates mappings in test input
     iso: list[str] = isolate_mappings(open("testdata.txt").read())
     # test prints
-    for m in isolated:
+    for m in iso:
         print(m)
 
     # preprocesses the isolated mappings

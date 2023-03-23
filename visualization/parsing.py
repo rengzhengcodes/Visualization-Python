@@ -37,7 +37,43 @@ def isolate_mappings(raw: str) -> list[str]:
     return mapping_texts
 
 
-def parse(file: TextIOWrapper) -> list:
+def preprocess_mappings(isolated: list[str]) -> list[tuple[tuple]]:
+    """Takes an output from isolate_mappings and then forms a list of tuples of 
+    tuples. Each outer tuple has 4 fields:
+    [
+        loops,          // these are the loops in the mapping (from innermost to outermost)      
+        storage_levels, // these are the storage levels
+        bypass_masks,   // read from right to left. one per level (1 means stored in level)
+        performance_metrics
+    ]
+
+    Attributes:
+        isolated: Of the form of the output from isolate_mappings
+
+    Returns:
+        A list of tuples of tuples, where the outermost tuple represents a mapping
+        and the innermost tuple representing a specific aspect of the mapping, as
+        listed above.
+    """
+    # processes each line of all isolated mappings and then splits the separate
+    # components per line
+    preprocessed_mappings: list = [
+        tuple([
+            tuple(filter(
+                bool,                       # keep split info if non-empty
+                tuple(dataline.split(';'))  # splits separate components of line
+            ))
+            for dataline in filter(
+                bool,                       # keeps line if non-empty
+                isolated_mapping.split('\n')# splits each line in mapping string
+            )
+        ]) for isolated_mapping in isolated
+    ]
+
+    return preprocessed_mappings
+
+
+def parse_file(file: TextIOWrapper) -> list:
     """
     file:TextIOWrapper
         File object pointing to the timeloop printout.
@@ -45,33 +81,20 @@ def parse(file: TextIOWrapper) -> list:
     returns:
         A list of mappings included in the printout
     """
-    # the entire file
+    # reads in the raw output file from timeloop
     raw: str = file.read()
-    
-    ###
-    # Splits into separate lines.
 
-    # [{dimension},{start},{end};]*  // these are the loops in the mapping (from innermost to outermost)
-    # [{storage_level}]*             // these are the storage levels
-    # [{bypass_mask}]*               // read from right to left. each one is a dataspace (1 means stored)
-    # [{cycles};{energy};]
-    ###
-    mapping_texts = [
-        [
-            dataspace.rstrip(
-                ";"
-            )  # this step is necessary to remove null string from the split due to ending split char
-            for dataspace in data_str.rstrip().split(
-                "\n"
-            )  # this step is necessary to remove null string from the split due to ending split char
-        ]
-        for data_str in mapping_texts
-    ]
+    # isolates each mapping in the raw data
+    isolated_mappings: list[str] = isolate_mappings(raw)
 
-    # stores all the mappings
+    # processes each mapping string into more granular subcomponents
+    preprocessed_mappings: list[list] = preprocess_mappings(isolated_mappings)
+
+    # stores all the mappings we will initialize
     mappings: list = list()
 
-    loop_info: str
+    # goes through all the pre processed mappings
+    loop_info: list
     storage_levels: str
     bypass_masks: str
     data: str
@@ -106,5 +129,14 @@ def parse(file: TextIOWrapper) -> list:
 
 
 if __name__ == "__main__":
+    # isolates mappings in test input
+    isolated_mappings: list[str] = isolate_mappings(open("testdata.txt").read())
+    # test prints
     for mapping in isolate_mappings(open("testdata.txt").read()):
+        print(mapping)
+
+    # preprocesses the isolated mappings
+    preprocessed_mappings: list[tuple[tuple]] = preprocess_mappings(isolated_mappings)
+    # debug prints
+    for mapping in preprocessed_mappings:
         print(mapping)

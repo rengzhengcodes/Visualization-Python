@@ -130,9 +130,10 @@ def parse_file(file: TextIOWrapper) -> list:
 
         # goes through all stores in reverse order and inserts them, reverse so
         # we don't need to worry about later elements shifting in list.
+        storage_indices.reverse()
         store_level: int  # index we're at in iteration, corresponds to Store level
         loop_index: int  # the index of the loop this Store first contains
-        for store_level, loop_index in reversed(tuple(enumerate(storage_indices))):
+        for store_level, loop_index in enumerate(storage_indices):
             mapping.insert(
                 # inserts at loop index as Store has to come before a Loop to contain it
                 loop_index,
@@ -148,9 +149,13 @@ def parse_file(file: TextIOWrapper) -> list:
 
         # pulls out cycles and energy data
         cycles, energy = metrics
-        # ints the metrics
+        # converts metrics into numerics
         cycles: int = int(cycles)
-        energy: int = int(energy)
+        energy: float = float(energy)
+
+        # inserts beginning Store if it doesn't exist
+        if not isinstance(mapping[0], Store):
+            mapping.insert(0, Store(len(storage_indices), ("A", "B", "Z")))
 
         mappings.append(Mapping(mapping, cycles, energy))
 
@@ -158,15 +163,20 @@ def parse_file(file: TextIOWrapper) -> list:
 
 
 if __name__ == "__main__":
-    # isolates mappings in test input
-    with open("testdata.txt", "r", encoding="utf-8") as testdata:
-        iso: list[str] = isolate_mappings(testdata.read())
-    # test prints
-    for m in iso:
-        print(m)
+    # # isolates mappings in test input
+    # with open("testdata.txt", "r", encoding="utf-8") as testdata:
+    #     iso: list[str] = isolate_mappings(testdata.read())
+    # # test prints
+    # for m in iso:
+    #     print(m)
 
-    # preprocesses the isolated mappings
-    preprocessed: list[tuple[tuple]] = preprocess_mappings(iso)
-    # debug prints
-    for m in preprocessed:
-        print(m)
+    # # preprocesses the isolated mappings
+    # preprocessed: list[tuple[tuple]] = preprocess_mappings(iso)
+    # # debug prints
+    # for m in preprocessed:
+    #     print(m)
+
+    with open("testdata.txt", "r", encoding="utf-8") as testdata:
+        for m in parse_file(testdata):
+            print("######")
+            print(m)

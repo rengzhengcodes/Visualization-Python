@@ -70,21 +70,17 @@ def preprocess_mappings(isolated: list[str]) -> list[tuple[tuple]]:
     # components per line
     preprocessed_mappings: list = [
         tuple(
-            [
-                tuple(
-                    filter(
-                        bool,  # keep split info if non-empty
-                        tuple(
-                            dataline.split(";")
-                        ),  # splits separate components of line
-                    )
-                )
-                for dataline in filter(
-                    bool,  # keeps line if non-empty
-                    isolated_mapping.split("\n"),  # splits each line in mapping string
-                )
-            ]
+            tuple(
+                # writes components if not empty string from split
+                component
+                for component in dataline.split(";")
+                if component
+            )
+            # processes dataline if not empty line from split
+            for dataline in isolated.split("\n")
+            if dataline
         )
+        # goes through all mappings
         for isolated_mapping in isolated
     ]
 

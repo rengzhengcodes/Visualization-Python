@@ -95,24 +95,21 @@ def parse_file(file: TextIOWrapper) -> list:
     returns:
         A list of mappings included in the printout
     """
-    # reads in the raw output file from timeloop
-    raw: str = file.read()
-
-    # isolates each mapping in the raw data
-    isolated_mappings: list[str] = isolate_mappings(raw)
-
-    # processes each mapping string into more granular subcomponents
-    preprocessed_mappings: list[list] = preprocess_mappings(isolated_mappings)
-
     # stores all the mappings we will initialize
     mappings: list = []
 
-    # goes through all the pre processed mappings
+    # goes through all the preprocessed mappings
     loops: tuple[str]           # all the loops in a mapping
     storage_indices: tuple[str] # the index of the first loop a Store contains
     bypass_masks: tuple[str]    # the bypass masks per Store
     metrics: tuple[str]         # mapping performance data
-    for [loops, storage_indices, bypass_masks, metrics] in preprocessed_mappings:
+    for loops, storage_indices, bypass_masks, metrics in preprocess_mappings(
+        # isolates each mapping in the raw data
+        isolate_mappings(
+            # reads in the raw output file from timeloop
+            file.read()
+        )
+    ):
         # stores the master mapping structure
         mapping: list = []
 
@@ -136,13 +133,16 @@ def parse_file(file: TextIOWrapper) -> list:
         store_level: int  # index we're at in iteration, corresponds to Store level
         loop_index: int  # the index of the loop this Store first contains
         for store_level, loop_index in reversed(tuple(enumerate(storage_indices))):
-            # the bypass corresponding to this Store, casted for Store instantiation
-            bypass: np.uint32 = np.uint32(bypass_masks[store_level])
             mapping.insert(
                 # inserts at loop index as Store has to come before a Loop to contain it
                 loop_index,
                 # instantiates the corresponding Store
-                Store(store_level, ("A", "B", "Z"), bypass),
+                Store(
+                    # default variables
+                    store_level, ("A", "B", "Z"),
+                    # grabs the bypass corresponding to this Store
+                    np.uint32(bypass_masks[store_level])
+            ),
             )
 
         # pulls out cycles and energy data

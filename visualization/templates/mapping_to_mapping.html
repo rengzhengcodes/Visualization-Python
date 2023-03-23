@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Foundation Frontend Framework-->
+    <!-- Compressed CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.5/dist/css/foundation.min.css" crossorigin="anonymous">
+    <!-- Compressed JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.5/dist/js/foundation.min.js" crossorigin="anonymous"></script>
+    
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='master.css') }}"
+    />
+
+    <title>Mapping to Mapping Comparison</title>
+
+</head>
+<body>
+
+    <div class="grid-x">
+
+        <!-- Side Padding to Center Data in Screen -->
+        <div class="cell medium-2"></div>
+
+        <!-- Main Container Holding the Data -->
+        <div class="cell medium-8 grid-x">
+
+            <!-- Generates all the Mapping HTML -->
+            {% for diff in diffs %}
+                <div id="mapping{{ loop.index0 }}" class="cell medium-6">
+                    <h1>Mapping {{ loop.index0 }}</h1>
+                    <h2>Cycles: {{ mappings[loop.index0].cycles }}</h2>
+                    <h2>Energy: {{ mappings[loop.index0].energy }}</h2>
+                    <h2>Representation:</h2>
+                    <div class="pre mapping_line">{{ diff|markdown }}</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Side Padding to Center Data in Screen -->
+        <div class="cell medium-2"></div>
+
+    </div>
+
+</body>
+</html>

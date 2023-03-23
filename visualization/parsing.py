@@ -1,7 +1,16 @@
+"""Parses mappings from a description in a file outputted by a timeloop hack.
+The file is of the form {{INSERT DESCRIPTION HERE}}
+
+Typical use case:
+    mappings: list[Mapping] = parse_file(open("path/to/file"))
+"""
+# imports numpy for bypass masks
+import numpy as np
+
 # gets the classes we constructed
 from mapping.elements.stores import Store
-from mapping.elements.loops import For, ParFor
-from mapping import Block, Mapping, MappingElement
+from mapping.elements.loops import For
+from mapping import Mapping
 
 # for typehinting
 from io import TextIOWrapper
@@ -23,7 +32,8 @@ def isolate_mappings(raw: str) -> list[str]:
     """
     ###
     # Breaks it up by mapping, which is in 4 line chunks.
-    # Source: https://stackoverflow.com/questions/26459838/splitting-a-string-every-n-lines-using-regex
+    # Source:
+    # https://stackoverflow.com/questions/26459838/splitting-a-string-every-n-lines-using-regex
     # (?:     # Start a non-capturing group that matches...
     # ^       # (from the start of a line)
     # .*      # any number of non-newline characters
@@ -99,37 +109,45 @@ def parse_file(file: TextIOWrapper) -> list:
     preprocessed_mappings: list[list] = preprocess_mappings(isolated_mappings)
 
     # stores all the mappings we will initialize
-    mappings: list = list()
+    mappings: list = []
 
     # goes through all the pre processed mappings
-    loop_info: list
-    storage_levels: str
-    bypass_masks: str
-    data: str
-    for [loop_info, storage_levels, bypass_masks, data] in mapping_texts:
+    loops: tuple[str]  # all the loops in a mapping
+    storage_indices: tuple[str]  # the index of the first loop a Store contains
+    bypass_masks: tuple[str]  # the
+    data: tuple[str]
+    for [loops, storage_indices, bypass_masks, data] in preprocessed_mappings:
         # stores the master mapping structure
-        mapping: list = list()
+        mapping: list = []
 
-        # converts the loop_info into the loops and dumps them in mapping.
-        for loop in loop_info.split(";"):
-            for dim, start, end in [loop.split(",")]:
-                mapping.append(For(dim, int(start), int(end)))
+        # iterates through all loops
+        loop: str
+        for loop in loops:
+            # splits the loop representation into component parts
+            dim: str
+            start: str
+            end: str
+            dim, start, end = loop.split(",")
 
-        # gets the indicies of the loops the levels refer to
-        storage_levels: list[int] = [int(level) for level in storage_levels.split(";")]
-        # creates corresponding level curves and inserts them into the correct position
-        for Lval in range(len(storage_levels) - 1, -1, -1):
+            # instantiates a corresponding loop and appends to mapping
+            mapping.append(For(dim, int(start), int(end)))
+
+        # gets the index of the loop each Store first contains
+        storage_indices: list[int] = [int(level) for level in storage_indices]
+
+        # goes through all stores in reverse order and inserts them, reverse so
+        # we don't need to worry about later elements shifting in list.
+        store_level: int  # index we're at in iteration, corresponds to Store level
+        loop_index: int  # the index of the loop this Store first contains
+        for store_level, loop_index in reversed(enumerate(storage_indices)):
+            # the bypass corresponding to this Store, casted for Store instantiation
+            bypass: np.uint32 = np.uint32(bypass_masks[store_level])
             mapping.insert(
-                storage_levels[Lval],
-                Store(Lval, ("A", "B", "Z")),  # don't know what dataspace it stores yet
+                # inserts at loop index as Store has to come before a Loop to contain it
+                loop_index,
+                # instantiates the corresponding Store
+                Store(store_level, ("A", "B", "Z"), bypass),
             )
-
-        # bypass masks, read left to right TODO::implement bypass descriptors
-        bypass_masks = [
-            mask[::-1] for mask in bypass_masks
-        ]  # reverses direction so indicies line up
-        # extracts performance information. TODO::store performance information in mapping
-        data: list = [float(info) for info in data.split(";")]
 
         mappings.append(Mapping(mapping))
 
@@ -138,13 +156,13 @@ def parse_file(file: TextIOWrapper) -> list:
 
 if __name__ == "__main__":
     # isolates mappings in test input
-    isolated_mappings: list[str] = isolate_mappings(open("testdata.txt").read())
+    iso: list[str] = isolate_mappings(open("testdata.txt").read())
     # test prints
-    for mapping in isolate_mappings(open("testdata.txt").read()):
-        print(mapping)
+    for m in isolated:
+        print(m)
 
     # preprocesses the isolated mappings
-    preprocessed_mappings: list[tuple[tuple]] = preprocess_mappings(isolated_mappings)
+    preprocessed: list[tuple[tuple]] = preprocess_mappings(iso)
     # debug prints
-    for mapping in preprocessed_mappings:
-        print(mapping)
+    for m in preprocessed:
+        print(m)

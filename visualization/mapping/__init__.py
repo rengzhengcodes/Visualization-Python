@@ -2,7 +2,7 @@
 hardware mappings.
 
 Typical use case:
-mapping = Mapping([Buffer, ForLoop])
+    mapping = Mapping([Buffer, ForLoop])
 """
 # imports type hinting tools
 from __future__ import annotations

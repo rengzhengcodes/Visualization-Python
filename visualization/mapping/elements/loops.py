@@ -114,6 +114,15 @@ class Loop(MappingElement, Distinguishable):
 
         return self._frame.format(loop_type=loop_type, dim=dim, start=start, end=end)
 
+    @property
+    def archetype(self) -> tuple[type, str]:
+        """Returns the archetype of the Loop.
+
+        Returns:
+            a tuple of the form (LoopType, dim)
+        """
+        return (type(self), self.dim)
+
     #########################
     # testing aid functions #
     #########################

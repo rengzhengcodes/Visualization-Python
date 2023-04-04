@@ -116,6 +116,36 @@ class Block:
         return True
 
     @property
+    def loops(self) -> tuple[Loop]:
+        """Returns a tuple of the loops in this Block"""
+        # The loops to be returned
+        loops: list[Loop] = []
+
+        # goes through all child elements
+        child: MappingElement
+        for child in self.children:
+            # if the child is a loop
+            if isinstance(child, Loop):
+                # append to list
+                loops.append(child)
+
+        return tuple(loops)
+
+    @property
+    def archetypes(self) -> tuple[tuple[type, str]]:
+        """Returns a tuple of the loop archetypes in this Block"""
+        # the archetypes to be returned
+        archetypes: list[Loop] = []
+
+        # goes through all the loops
+        loop: Loop
+        for loop in self.loops:
+            # append its archetype to the list
+            archetypes.append(loop.archetype)
+
+        return tuple(archetypes)
+
+    @property
     def loop_dims(self) -> tuple[str]:
         """Returns an ordered list of the dimensions enumerated over"""
         # the list of dimensions
@@ -132,30 +162,33 @@ class Block:
     ########################
 
     def justify(self, other: Block) -> Block:
-        """Inserts into a copy of self the dims that are located in this Block
-        but not the other Block.
+        """Inserts into a copy of self the dims that are not located in this Block
+        but are in the other Block.
 
-        returns the copy of self"""
-        # the loops in each Block
+        Attributes:
+            other: The Block to compare against with potentially additional info.
+        Returns:
+            The copy of self"""
+        # the loop dims in each Block
         self_loop_dims: tuple[str] = self.loop_dims
         other_loop_dims: tuple[str] = other.loop_dims
 
-        # the loops not contained in self
-        missing_loops: list = []
-        # calculates the loops not in self
+        # the loop dims not contained in self
+        missing_dims: list = []
+        # calculates the loop dims not in self
         dim: str
         for dim in other_loop_dims:
             if dim not in self_loop_dims:
-                missing_loops.append(dim)
+                missing_dims.append(dim)
 
         # represents the new block loop order
         new_loops: list[Loop] = list(self.children)
 
-        # inserts the missing loops in the correct relative positions
-        loop: str
-        for loop in missing_loops:
+        # inserts the missing dims in the correct relative positions
+        dim: str
+        for dim in missing_dims:
             # finds its index in other
-            other_index: int = other_loop_dims.index(loop)
+            other_index: int = other_loop_dims.index(dim)
 
             # inserts into new loop at index
             new_loops.insert(other_index, other.children[other_index].blank())
@@ -163,6 +196,54 @@ class Block:
         # the new block to be returned
         new_block: Block = Block(self.buffer)
         print(new_loops)
+
+        # sets its children
+        new_block.children = new_loops
+
+        return new_block
+
+    def justify_aware(self, other: Block) -> Block:
+        """Inserts into a copy of self the dims that are located in this Block
+        but not in the other Block. Considers par-for and for iterations across
+        a dim to be different dims.
+
+        Attributes:
+            other: The Block to justify against.
+        Returns:
+            A copy of self with missing information inserted from other.
+        """
+        # the archetypes in each Block
+        self_archetypes: tuple[Loop] = self.loops
+        other_archetypes: tuple[Loop] = other.loops
+
+        # the archetypes not contained in self
+        missing_archetypes: list[Loop] = []
+
+        # calculates the archetypes not in self
+        archetype: tuple[Loop, str]
+        for archetype in other_archetypes:
+            if archetype not in self_archetypes:
+                missing_archetypes.append(archetype)
+
+        # represents the new block loop order
+        new_loops: list[Loop] = list(self.children)
+
+        # inserts the missing archetypes into the correct positions
+        archetype: tuple[Loop, str]
+        for archetype in missing_archetypes:
+            # unpacks archetype
+            loop_type: Loop
+            dim: str
+            loop_type, dim = archetype
+
+            # finds the index of the loop in other
+            other_index: int = other_archetypes.index(archetype)
+
+            # inserts the new loop at index
+            new_loops.insert(other_index, loop_type(dim, 0, 1))
+
+        # the new Block to be returned
+        new_block: Block = Block(self.buffer)
 
         # sets its children
         new_block.children = new_loops

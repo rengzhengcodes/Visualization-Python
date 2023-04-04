@@ -300,7 +300,12 @@ class Block:
 
 
 class Mapping:
-    """Represents a hardware mapping."""
+    """Represents a hardware mapping.
+    
+    Attributes:
+        blocks: The Blocks/storage levels of the mapping
+        cycles: The number of cycles the mapping takes to do an operation
+        energy: The amount of energy needed to do the computation."""
 
     def __init__(
         self,

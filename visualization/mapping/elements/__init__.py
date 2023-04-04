@@ -71,7 +71,7 @@ class Distinguishable:
         member of the class.
 
         Attributes:
-            other -- of the same type as self. To be comapred against.
+            other: of the same type as self. To be comapred against.
 
         Returns:
             A string with color-agnostic representation of the differences.

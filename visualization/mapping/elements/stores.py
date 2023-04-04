@@ -33,7 +33,7 @@ class Store(MappingElement):
         for index, space in enumerate(dataspaces):
             # checks if this index was bypassed
             if not (bypass >> index) & 0b1:
-                # if not, add datspace
+                # if not, add dataspace
                 resident_spaces.append(space)
 
             # if it was, mark that the dataspace was bypassed with ~ ~ for strikethrough

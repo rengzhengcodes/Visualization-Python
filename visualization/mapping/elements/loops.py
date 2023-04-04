@@ -67,10 +67,10 @@ class Loop(MappingElement, Distinguishable):
 
     def diff(self, other: Loop) -> str:
         """Notes the differences between each loop
-        
+
         Attributes:
             other: The loop to compare against
-        
+
         Returns:
             A string with markdown highlighting of differences."""
         if not isinstance(other, Loop):

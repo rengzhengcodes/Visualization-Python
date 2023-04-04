@@ -301,7 +301,7 @@ class Block:
 
 class Mapping:
     """Represents a hardware mapping.
-    
+
     Attributes:
         blocks: The Blocks/storage levels of the mapping
         cycles: The number of cycles the mapping takes to do an operation

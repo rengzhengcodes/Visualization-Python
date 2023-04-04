@@ -98,6 +98,61 @@ def basic() -> str:
     )
 
 
+@app.route("/justify_aware")
+def justify_aware() -> str:
+    """Very crude visual test for the justification function."""
+    mapping = Mapping(
+        [
+            Store(2, ("A", "B", "Z")),
+            For("m", 0, 4),
+            For("k", 0, 2),
+            For("n", 0, 4),
+            Store(1, ("A", "B", "Z"), np.uint32(0b11)),
+            For("m", 0, 4),
+            For("n", 0, 4),
+            ParFor("k", 0, 8),
+            Store(0, ("A", "B", "Z")),
+            For("m", 0, 1),
+            For("n", 0, 1),
+            For("k", 0, 1),
+        ]
+    )
+
+    other_mapping = Mapping(
+        [
+            Store(2, ("A", "B", "Z")),
+            For("k", 0, 2),
+            For("m", 0, 2),
+            For("n", 0, 4),
+            Store(1, ("A", "B", "Z")),
+            For("m", 0, 8),
+            For("n", 0, 4),
+            For("k", 0, 8),
+            Store(0, ("A", "B", "Z")),
+            For("m", 0, 1),
+            For("n", 0, 1),
+            ParFor("k", 0, 1),
+        ]
+    )
+
+    # justifies the mappings against each other
+    mapping = mapping.justify(other_mapping)
+    other_mapping = other_mapping.justify(mapping)
+
+    print(mapping)
+    print("#######")
+    print(other_mapping)
+
+    return render_template(
+        "mapping_to_mapping.html",
+        diffs=(
+            mapping.diff(other_mapping),
+            other_mapping.diff(mapping),
+        ),
+        mappings=(mapping, other_mapping),
+    )
+
+
 @app.route("/justify")
 def justify() -> str:
     """Very crude visual test for the justification function."""

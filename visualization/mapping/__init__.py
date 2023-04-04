@@ -213,11 +213,11 @@ class Block:
             A copy of self with missing information inserted from other.
         """
         # the archetypes in each Block
-        self_archetypes: tuple[Loop] = self.loops
-        other_archetypes: tuple[Loop] = other.loops
+        self_archetypes: tuple[tuple[Loop, str]] = self.archetypes
+        other_archetypes: tuple[tuple[Loop, str]] = other.archetypes
 
         # the archetypes not contained in self
-        missing_archetypes: list[Loop] = []
+        missing_archetypes: list[tuple[Loop, str]] = []
 
         # calculates the archetypes not in self
         archetype: tuple[Loop, str]
@@ -398,7 +398,7 @@ class Mapping:
         block: Block
         for index, block in enumerate(self.blocks):
             # justifies against the corresponding block in other
-            justification: Block = block.justify(other.blocks[index])
+            justification: Block = block.justify_aware(other.blocks[index])
             # appends the justified block
             justified.append(justification)
 

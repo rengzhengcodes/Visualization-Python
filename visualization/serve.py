@@ -19,6 +19,9 @@ from mapping import Mapping
 from mapping.elements.loops import For, ParFor
 from mapping.elements.stores import Store
 
+# imports parsing
+from parsing import parse_file
+
 # creates server
 app: Flask = Flask(__name__)
 # makes it markdown compliant
@@ -246,6 +249,19 @@ def justify_complex():
         ),
         mappings=(mapping, other_mapping),
     )
+
+
+@app.route("/multi")
+def parse():
+    """Parse output tester"""
+    # imports test data
+    with open("testdata.txt", encoding="utf-8") as testdata:
+        mappings: list[Mapping] = parse_file(testdata)
+
+    # generates all the differences
+    diffs: tuple[Mapping] = tuple(mapping.diff(mappings[0]) for mapping in mappings)
+
+    return render_template("multi_mapping.html", diffs=diffs, mappings=mappings)
 
 
 if __name__ == "__main__":

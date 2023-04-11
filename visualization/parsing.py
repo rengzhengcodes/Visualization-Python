@@ -85,8 +85,9 @@ def preprocess_mappings(isolated: list[str]) -> list[tuple[tuple]]:
     ]
 
     # strips any malformed mapping inputs
-    preprocessed_mappings = [processed for processed in preprocessed_mappings 
-                           if len(processed) == 4]
+    preprocessed_mappings = [
+        processed for processed in preprocessed_mappings if len(processed) == 4
+    ]
 
     return preprocessed_mappings
 

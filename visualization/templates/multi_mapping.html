@@ -17,10 +17,10 @@
             <div class="pre mapping_line">{{ diffs[0]|markdown }}</div>
         </div>
 
-        <div id="diffs" class="cell medium-6" style="overflow-x:scroll">
+        <div id="diffs" class="cell medium-6" style="overflow-x:scroll; max-height: 100vh">
             <!-- Generates all the diffs HTML -->
             {% for diff in diffs[1:] %}
-                <div id="diff{{ loop.index0 }}" class="cell">
+                <div id="diff{{ loop.index0 }}" style="height: 100vh">
                     <h1>Mapping {{ loop.index0 }}</h1>
                     <h2>Cycles: {{ mappings[loop.index0 + 1].cycles }}</h2>
                     <h2>Energy: {{ mappings[loop.index0 + 1].energy }}</h2>

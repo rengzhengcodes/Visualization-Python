@@ -1,28 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Mapping to Mapping Comparison{% endblock %}
 {% block body %}
-<div class="grid-x">
+<!-- Main Container Holding the Data -->
+<div class="cell medium-8 grid-x">
 
-    <!-- Side Padding to Center Data in Screen -->
-    <div class="cell medium-2"></div>
-
-    <!-- Main Container Holding the Data -->
-    <div class="cell medium-8 grid-x">
-
-        <!-- Generates all the Mapping HTML -->
-        {% for diff in diffs %}
-            <div id="mapping{{ loop.index0 }}" class="cell medium-6">
-                <h1>Mapping {{ loop.index0 }}</h1>
-                <h2>Cycles: {{ mappings[loop.index0].cycles }}</h2>
-                <h2>Energy: {{ mappings[loop.index0].energy }}</h2>
-                <h2>Representation:</h2>
-                <div class="pre mapping_line">{{ diff|markdown }}</div>
-            </div>
-        {% endfor %}
-    </div>
-
-    <!-- Side Padding to Center Data in Screen -->
-    <div class="cell medium-2"></div>
-
+    <!-- Generates all the Mapping HTML -->
+    {% for diff in diffs %}
+        <div id="mapping{{ loop.index0 }}" class="cell medium-6">
+            <h1>Mapping {{ loop.index0 }}</h1>
+            <h2>Cycles: {{ mappings[loop.index0].cycles }}</h2>
+            <h2>Energy: {{ mappings[loop.index0].energy }}</h2>
+            <h2>Representation:</h2>
+            <div class="pre mapping_line">{{ diff|markdown }}</div>
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}

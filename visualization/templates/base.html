@@ -22,7 +22,22 @@
 
 </head>
 <body>
+  <div class="grid-x">
+
+    <!-- Side Padding to Center Data in Screen -->
+    <div class="cell medium-2"></div>
     {% block body %}
     {% endblock %}
+    <!-- Side Padding to Center Data in Screen -->
+    <div class="cell medium-2">
+        <!-- Upload File Area-->
+        <form action="{{ url_for('parse_timeloop') }}" method="POST" 
+        enctype="multipart/form-data">
+            <input type="file" id="timeloop_output" name="timeloop_output">
+            <input type="submit">
+        </form>
+    </div>
+  
+  </div>
 </body>
 </html>

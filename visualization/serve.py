@@ -6,10 +6,13 @@ Typical use cases:
 """
 
 # visualization libraries
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, request
 import plotly.express as px
 import pandas as pd
 import numpy as np
+
+# imports memory io for bytes
+from io import TextIOWrapper, BytesIO
 
 # python markdown to html conversion
 from flask_misaka import Misaka
@@ -18,6 +21,9 @@ from flask_misaka import Misaka
 from mapping import Mapping
 from mapping.elements.loops import For, ParFor
 from mapping.elements.stores import Store
+
+# imports typing for file uploads
+from werkzeug.datastructures import FileStorage
 
 # imports parsing
 from parsing import parse_file
@@ -263,6 +269,31 @@ def parse():
 
     return render_template("multi_mapping.html", diffs=diffs, mappings=mappings)
 
+
+@app.route("/parse", methods=['POST'])
+def parse_timeloop():
+    """
+    Takes a timeloop input file and parses it before displaying the output.
+    Assumes mappings are properly formatted and first mapping in the file
+    is the prime mapping to be analyzed.
+    """
+    # if the form exists
+    if "timeloop_output" in request.files:
+        # get the test data from the form
+        file: FileStorage = request.files["timeloop_output"]
+
+        # parses the data
+        mappings: list[Mapping] = parse_file(TextIOWrapper(BytesIO(file.read())))
+
+        # generates all the differences
+        diffs: tuple[Mapping] = tuple(mapping.diff(mappings[0]) for mapping in mappings)
+
+        return render_template(
+            "multi_mapping.html", diffs=diffs, mappings=mappings
+        )
+
+    # otherwise, stay on the same page
+    return redirect(request.referrer)
 
 if __name__ == "__main__":
     app.run(debug=True)

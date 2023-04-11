@@ -1,38 +1,31 @@
 {% extends "base.html" %}
 {% block title %}Multi-Mapping Comparison{% endblock %}
 {% block body %}
-<div class="grid-x">
-
-    <!-- Side Padding to Center Data in Screen -->
-    <div class="cell medium-2"></div>
-
-    <!-- Main Container Holding the Data -->
-    <div class="cell medium-8 grid-x">
-        <!-- Lists the prime mapping you're comparing against -->
-        <div id="prime" class="cell medium-6">
+<!-- Main Container Holding the Data -->
+<div class="cell medium-8 grid-x">
+    <!-- Lists the prime mapping you're comparing against -->
+    <div id="prime" class="cell medium-6">
+        {% if mappings|length > 0 %}
             <h1>Main Mapping</h1>
             <h2>Cycles: {{ mappings[0].cycles }}</h2>
             <h2>Energy: {{ mappings[0].energy }}</h2>
             <h2>Representation:</h2>
             <div class="pre mapping_line">{{ diffs[0]|markdown }}</div>
-        </div>
-
-        <div id="diffs" class="cell medium-6" style="overflow-x:scroll; max-height: 100vh">
-            <!-- Generates all the diffs HTML -->
-            {% for diff in diffs[1:] %}
-                <div id="diff{{ loop.index0 }}" style="height: 100vh">
-                    <h1>Mapping {{ loop.index0 }}</h1>
-                    <h2>Cycles: {{ mappings[loop.index0 + 1].cycles }}</h2>
-                    <h2>Energy: {{ mappings[loop.index0 + 1].energy }}</h2>
-                    <h2>Representation:</h2>
-                    <div class="pre mapping_line">{{ diff|markdown }}</div>
-                </div>
-            {% endfor %}
-        </div>
+        {% else %}
+            <h1>INPUT INVALID</h1>
+        {% endif %}
     </div>
-
-    <!-- Side Padding to Center Data in Screen -->
-    <div class="cell medium-2"></div>
-
+    <div id="diffs" class="cell medium-6" style="overflow-x:scroll; max-height: 100vh">
+        <!-- Generates all the diffs HTML -->
+        {% for diff in diffs[1:] %}
+            <div id="diff{{ loop.index0 }}" style="height: 100vh">
+                <h1>Mapping {{ loop.index0 }}</h1>
+                <h2>Cycles: {{ mappings[loop.index0 + 1].cycles }}</h2>
+                <h2>Energy: {{ mappings[loop.index0 + 1].energy }}</h2>
+                <h2>Representation:</h2>
+                <div class="pre mapping_line">{{ diff|markdown }}</div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

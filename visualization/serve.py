@@ -5,42 +5,42 @@ Typical use cases:
     Running this file to create the server.
 """
 
-# imports memory io for bytes
+# Imports memory io for bytes.
 from io import TextIOWrapper, BytesIO
 
-# visualization libraries
+# Visualization libraries.
 from flask import Flask, render_template, redirect, request
 import plotly.express as px
 import pandas as pd
 import numpy as np
 
-# imports typing for file uploads
+# Imports typing for file uploads.
 from werkzeug.datastructures import FileStorage
 
-# python markdown to html conversion
+# Python markdown to html conversion.
 from flask_misaka import Misaka
 
-# imports custom mapping class
+# Imports custom mapping class.
 from mapping import Mapping
 from mapping.elements.loops import For, ParFor
 from mapping.elements.stores import Store
 
 
-# imports parsing
+# Imports parsing.
 from parsing import parse_file
 
-# creates server
+# Creates server.
 app: Flask = Flask(__name__)
-# makes it markdown compliant
+# Makes server markdown compliant.
 Misaka(
-    app,  # converts app to markdown
-    strikethrough=True,  # allows strikethrough notation
-    highlight=True,  # allows highlight notation
+    app,                    # converts app to markdown
+    strikethrough=True,     # allows strikethrough notation
+    highlight=True,         # allows highlight notation
     no_indented_code=True,  # disables tabs = code notation
 )
 
 
-# landing page, serves as example graphical page for now
+# Landing page, serves as example graphical page for now.
 @app.route("/basic")
 def basic() -> str:
     """Serves a webapp on the root address that directly compares 2 mappings
@@ -293,6 +293,12 @@ def parse_timeloop():
 
     # otherwise, stay on the same page
     return redirect(request.referrer)
+
+
+@app.route("/looptree")
+def looptree():
+    """Loops tree visualizer test"""
+    return render_template("looptree.html")
 
 
 if __name__ == "__main__":

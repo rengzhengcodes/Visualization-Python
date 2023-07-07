@@ -211,7 +211,7 @@ def justify() -> str:
 
 
 @app.route("/just_complex")
-def justify_complex():
+def justify_complex() -> str:
     """Crude complex justify test"""
     mapping = Mapping(
         [
@@ -259,7 +259,7 @@ def justify_complex():
 
 
 @app.route("/multi")
-def parse():
+def parse() -> str:
     """Parse output tester"""
     # imports test data
     with open("testdata.txt", encoding="utf-8") as testdata:
@@ -272,7 +272,7 @@ def parse():
 
 
 @app.route("/parse", methods=["POST"])
-def parse_timeloop():
+def parse_timeloop() -> str:
     """
     Takes a timeloop input file and parses it before displaying the output.
     Assumes mappings are properly formatted and first mapping in the file
@@ -296,7 +296,7 @@ def parse_timeloop():
 
 
 @app.route("/looptree")
-def looptree():
+def looptree() -> str:
     """Loops tree visualizer test"""
     return render_template("looptree.html")
 

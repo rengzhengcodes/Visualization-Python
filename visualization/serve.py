@@ -7,6 +7,8 @@ Typical use cases:
 
 # Imports memory io for bytes.
 from io import TextIOWrapper, BytesIO
+import json
+import yaml
 
 # Visualization libraries.
 from flask import Flask, render_template, redirect, request
@@ -298,8 +300,8 @@ def parse_timeloop() -> str:
 @app.route("/looptree")
 def looptree() -> str:
     """Loops tree visualizer test"""
-    return render_template("looptree.html")
-
+    tree_data: dict = yaml.safe_load(open("looptree.yaml", "r", encoding="utf-8"))
+    return render_template("looptree.html", tree_data=tree_data)
 
 if __name__ == "__main__":
     app.run(debug=True)

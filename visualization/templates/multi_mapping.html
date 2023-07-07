@@ -15,10 +15,10 @@
             <h1>INPUT INVALID</h1>
         {% endif %}
     </div>
-    <div id="diffs" class="cell medium-6" style="overflow-x:scroll; max-height: 100vh">
+    <div id="diffs" class="cell medium-6 grid-y" style="overflow-x:scroll;max-height:100vh">
         <!-- Generates all the diffs HTML -->
         {% for diff in diffs[1:] %}
-            <div id="diff{{ loop.index0 }}" style="height: 100vh">
+            <div id="diff{{ loop.index0 }}" style="height:fit-content">
                 <h1>Mapping {{ loop.index0 }}</h1>
                 <h2>Cycles: {{ mappings[loop.index0 + 1].cycles }}</h2>
                 <h2>Energy: {{ mappings[loop.index0 + 1].energy }}</h2>

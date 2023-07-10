@@ -300,8 +300,16 @@ def parse_timeloop() -> str:
 @app.route("/looptree")
 def looptree() -> str:
     """Loops tree visualizer test"""
-    tree_data: dict = yaml.safe_load(open("looptree.yaml", "r", encoding="utf-8"))
-    return render_template("looptree.html", tree_data=tree_data)
+    # Extracts the YAML looptree raw data.
+    looptree_data: dict = yaml.safe_load(open("looptree.yaml", "r", encoding="utf-8"))
+    # Extracts the mapping tree.
+    mapping: dict = looptree_data["mapping"]
+    # Extracts the type of mapping we have. 
+    mapping_type: str = mapping["type"]
+    # Extracts the mapping tree.
+    map_tree: list[dict] = mapping["nodes"]
+
+    return render_template("looptree.html", map_tree=map_tree, mapping_type = mapping_type)
 
 if __name__ == "__main__":
     app.run(debug=True)

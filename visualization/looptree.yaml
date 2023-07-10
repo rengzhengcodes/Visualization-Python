@@ -1,0 +1,63 @@
+mapping:
+  type: fused
+  nodes:
+  - type: storage
+    target: 0
+    dspace: [Filter1, Filter2, Fmap1, Fmap3]
+  - type: temporal
+    dimension: P2
+    tile_size: 2
+  - type: storage
+    target: 1
+    dspace: [Fmap1, Fmap2]
+  - type: storage
+    target: 1
+    dspace: [Fmap3]
+  - type: pipeline
+    branches:
+    - - type: temporal
+        dimension: P1
+        tile_size: 1
+      - type: storage
+        target: 1
+        dspace: [Filter1]
+      - type: temporal
+        dimension: M1
+        tile_size: 16
+      - type: temporal
+        dimension: C1
+        tile_size: 16
+      - type: temporal
+        dimension: R1
+        tile_size: 1
+      - type: spatial
+        dimension: M1
+        tile_size: 1
+      - type: spatial
+        dimension: C1
+        tile_size: 1
+      - type: compute
+        einsum: Conv1
+    - - type: temporal
+        dimension: P2
+        tile_size: 1
+      - type: storage
+        target: 1
+        dspace: [Filter2]
+      - type: temporal
+        dimension: M2
+        tile_size: 16
+      - type: temporal
+        dimension: C2
+        tile_size: 16
+      - type: temporal
+        dimension: R2
+        tile_size: 1
+      - type: spatial
+        dimension: M2
+        tile_size: 1
+      - type: spatial
+        dimension: C2
+        tile_size: 1
+      - type: compute
+        einsum: Conv2

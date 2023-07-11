@@ -67,7 +67,7 @@ function mapping_to_hierarchy(mapping, root) {
 window.onload = function() {
 // Interprets the map_tree Python dictionary as a JSON object.
 let map_tree = {{ map_tree|tojson }};
-console.log(map_tree);
+
 // Converts the map tree into a D3 parseable hierarchy structure.
 let hierarchy = {
     "dependencies": [],
@@ -78,9 +78,76 @@ mapping_to_hierarchy(map_tree, hierarchy);
 // Fetches the container in which we want to display the visualization.
 let display = document.getElementById("looptree");
 
-// Puts display into display.
-display.innerText = JSON.stringify(hierarchy, null, 2);
-console.log(hierarchy);
+// Set the dimensions and margins of the diagram.
+const width = 1000;
+const height = 1000;
+const margin = 50;
+
+// Appends the svg object to the display.
+const svg = d3.select("#looptree")
+    .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+    .append("g")
+        .attr("transform", `translate(${margin}, ${margin})`);
+
+// Creates a tree layout and assigns the size.
+const treemap = d3.tree()
+    .size([width - 2 * margin, height - 2 * margin]);
+
+// Assigns parent, children, height, depth.
+const root = d3.hierarchy(hierarchy, d => d.dependencies);
+root.x0 = height / 2;
+root.y0 = 0;
+
+// Assigns the x and y position for the nodes.
+const treeData = treemap(root);
+
+// Creates a link path.
+const link = svg.selectAll(".link")
+    .data(treeData.descendants().slice(1))
+    .enter()
+    .append("path")
+        .attr("class", "link")
+        .attr("d", d => {
+            return `M ${d.y} ${d.x}
+                    C ${(d.y + d.parent.y) / 2} ${d.x},
+                      ${(d.y + d.parent.y) / 2} ${d.parent.x},
+                      ${d.parent.y} ${d.parent.x}`;
+        })
+        .style("fill", "none")
+        .attr("stroke", "#ccc");
+
+
+// Creates a node.
+const node = svg.selectAll(".node")
+    .data(treeData.descendants())
+    .enter()
+    .append("g")
+        .attr("class", d => {
+            return `node${d.children ? " node--internal" : " node--leaf"}`;
+        })
+        .attr("transform", d => `translate(${d.y}, ${d.x})`);
+
+// Adds the circle to the node.
+node.append("circle")
+    .attr("r", 10);
+
+// Adds the text to the node.
+node.append("text")
+        .attr("dy", "1.5em")
+        .style("text-anchor", "middle")
+        .style("z-index", "100")
+        .text(d => d.data.type);
+
+// Adds the title to the node.
+node.append("title")
+    .text(d => d.data.type + "Mapping");
+
+
+
+// Displays the tree in looptree div.
+document.getElementById("looptree").appendChild(node.node());
 }
 </script>
 {% endblock %}

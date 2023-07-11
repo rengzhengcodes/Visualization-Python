@@ -129,13 +129,13 @@ const node = svg.selectAll(".node")
 
 // Adds the circle to the node.
 node.append("circle")
-    .attr("r", "0.5em");
+    .attr("r", `0.5em`);
 
 // Adds the text to the node.
 node.append("text")
-        .attr("dy", "1.5em")
+        .attr("dy", `1.5em`)
         .style("text-anchor", "middle")
-        .style("z-index", "100")
+        .style("z-index", 100)
         .text(d => d.data.type);
 
 // Adds the title to the node.

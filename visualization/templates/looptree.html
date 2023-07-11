@@ -95,7 +95,7 @@ const treemap = d3.tree()
 
 // Assigns parent, children, height, depth.
 const root = d3.hierarchy(hierarchy, d => d.dependencies);
-root.x0 = height / 2;
+root.x0 = `50%`;
 root.y0 = 0;
 
 // Assigns the x and y position for the nodes.

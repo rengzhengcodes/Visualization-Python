@@ -33,9 +33,9 @@ function mapping_to_hierarchy(mapping, root) {
     // If the mapping segment is an array, make them all children of each other.
     if (mapping instanceof Array) {
         // Makes the dependency tree.
-        for (ref of mapping) {
+        for (const ref of mapping) {
             // Initializes child with no dependencies.
-            let child = {
+            const child = {
                 "dependencies": []
             };
             /* Copies all keys in the reference if it's not leading to other

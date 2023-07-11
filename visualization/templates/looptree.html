@@ -18,152 +18,69 @@
 {% block epilogue %}
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script type="text/javascript">
-    /** 
-     * Starts generating the looptree visualization graphic once all the dependencies
-     * have been loaded.*/
-    window.onload = function() {
-        // Interprets the map_tree Python dictionary as a JSON object.
-        let map_tree = {{ map_tree|tojson }};
-        /** 
-         * If an element of map_tree is pipeline or sequential, replace the key
-         * "branches" with "children", keeping the same value. This is necessary
-         * for the D3 hierarchy parser to work. Also, to make it work with
-         * the D3 hierarchy parser, type becomes name as well.
-         *
-         * @param {Object} node - The node to be checked for branches.
-         */
-        function replace_branches_with_children(node) {
-            // Don't recurse if it's not a node (i.e. has no type attribute).
-            if (node["type"]) {
-                // Creates the "data" key, and copies self into it.
-                node["data"] = structuredClone(node);
-                // Reassigns "type" to "name".
-                node["name"] = node["type"];
-                // Deletes the type key.
-                delete node["type"];
-
-                // Branches are only present in pipeline and sequential nodes.
-                if (node["name"] == "pipeline" || node["name"] == "sequential") {
-                    // Reassigns "branches" to "children".
-                    node["children"] = node["branches"];
-                    // Deletes branches from data to prevent multiple copies of the
-                    // same data.
-                    delete node["data"]["branches"];
-                    // Deletes the "branches" key.
-                    delete node["branches"];
-
-                    // Recurses this function on all children.
-                    for (child of node["children"]) {
-                        replace_branches_with_children(child);
+/**
+ * Converts a mapping to a hierarchy structure. All arrays are converted so that
+ * each subsequent element in the array is a child of the previous element.
+ * If there is branching, all branches are siblings and are children of the
+ * element they branched off of.
+ *
+ * @param {Object} mapping  The JSON containing the mapping in the default YAML
+ *                          format. Only contains the portion corresponding to
+ *                          children of the root we're appending to.
+ * @param {Object} root     The root we're currently building off of.
+ */
+function mapping_to_hierarchy(mapping, root) {
+    // If the mapping segment is an array, make them all children of each other.
+    if (mapping instanceof Array) {
+        // Makes the dependency tree.
+        for (ref of mapping) {
+            // Initializes child with no dependencies.
+            let child = {
+                "dependencies": []
+            };
+            /* Copies all keys in the reference if it's not leading to other
+             * nodes */
+             for (key in ref) {
+                // If the key is not branches, copy it over.
+                if (key !== "branches") {
+                    child[key] = ref[key];
+                // If it's leading to other nodes, recurse.
+                } else {
+                    // Goes through every branch and copies.
+                    for (branch of ref[key]) {
+                        mapping_to_hierarchy(branch, child);
                     }
-                }
-                
-                // Deletes every key that is not data or name or children.
-                for (key in node) {
-                    if (key === "data" || key === "name" || key === "children") {
-                        continue;
-                    }
-                    delete node[key];
                 }
             }
+            // Adds the child to the root.
+            root["dependencies"].push(child);
+
+            // Sets root as the child as this is a sequential process.
+            root = child;
         }
+    }
+}
 
-        // Replaces all branches with children from the root node.
-        for (node of map_tree) {
-            replace_branches_with_children(node);
-        }
+/** 
+* Starts generating the looptree visualization graphic once all the dependencies
+* have been loaded.*/
+window.onload = function() {
+// Interprets the map_tree Python dictionary as a JSON object.
+let map_tree = {{ map_tree|tojson }};
+console.log(map_tree);
+// Converts the map tree into a D3 parseable hierarchy structure.
+let hierarchy = {
+    "dependencies": [],
+    "type": {{ mapping_type|tojson }},
+};
+mapping_to_hierarchy(map_tree, hierarchy);
 
-        // Makes the map_tree a hierarchy by adding a root node.
-        let map_tree_hierarchy = {"name": "root", "children": map_tree};
+// Fetches the container in which we want to display the visualization.
+let display = document.getElementById("looptree");
 
-        // Generates a D3 hierarchy from the map_tree.
-        const root = d3.hierarchy(map_tree_hierarchy);
-
-        /* Beyond here the source code is heavily inspired from 
-         * https://observablehq.com/@d3/cluster/2?collection=@d3/d3-hierarchy    
-         */    
-        function make_svg(root) {
-            // Declares the width of the visualization.
-            const width = 1000;
-
-            /* Calculates the width and height offsets per element, allowing the
-            * visualization to be scaled according to the tree breadth.
-            */
-            const dx = 10;
-            const dy = width / (root.height + 1);
-
-            // Creates a D3 tree layout.
-            const tree = d3.cluster().nodeSize([dx, dy]);
-
-            // Sort the tree and apply the layout.
-            root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
-            tree(root);
-
-            /* Computes the extent of each tree. x and y are swapped as for trees
-            * the x axis represents breadth, but as the tree extends horizontally
-            * x in this case is vertical.
-            */
-            let x0 = Infinity;
-            let x1 = -x0;
-            root.each(d => {
-                if (d.x > x1) x1 = d.x;
-                if (d.x < x0) x0 = d.x;
-            })
-
-            // Computes the adjusted height of the visualization.
-            const height = x1 - x0 + dx * 2;
-
-            // Creates the visualization SVG.
-            const svg = d3.create("svg")
-                            .attr("width", width)
-                            .attr("height", height)
-                            .attr("viewBox", [-dy/3, x0-dx, width, height])
-                            .attr("style", "max-width:100%;height:auto;font:10px sans-serif;");
-
-            // Creates the links between nodes.
-            const link = svg.append("g")
-                            .attr("fill", "none")
-                            .attr("stroke", "#555")
-                            .attr("stroke-opacity", 0.4)
-                            .attr("stroke-width", 1.5)
-                            .selectAll()
-                                .data(root.links())
-                                .join("path")
-                                    .attr("d", d3.linkHorizontal()
-                                                .x(d => d.y)
-                                                .y(d => d.x));
-            
-            // Creates the nodes.
-            const node = svg.append("g")
-                            .attr("stroke-linejoin", "round")
-                            .attr("stroke-width", 3)
-                            .selectAll()
-                                .data(root.descendants())
-                                .join("g")
-                                    .attr("transform", d => `translate(${d.y},${d.x})`);
-            
-            // Adds node symbol.
-            node.append("circle")
-                .attr("fill", d => d.children ? "#555" : "#999")
-                .attr("r", 2.5);
-            
-            // Adds text to nodes.
-            node.append("text")
-                .attr("dy", "0.31em")
-                .attr("x", d => d.children ? -6 : 6)
-                .attr("text-anchor", d => d.children ? "end" : "start")
-                .text(d => d.data.name)
-                .clone(true).lower()
-                    .attr("stroke", "white");
-
-            return svg;
-        }
-
-        // Creates the SVG.
-        let svg = make_svg(root);
-
-        // Displays the svg in the div with id looptree.
-        document.getElementById("looptree").appendChild(svg.node());
-    };
+// Puts display into display.
+display.innerText = JSON.stringify(hierarchy, null, 2);
+console.log(hierarchy);
+}
 </script>
 {% endblock %}

@@ -77,17 +77,22 @@ function generate_mapping_diagram(mapping) {
     // Appends the svg object to the display.
     const svg = d3.select("#looptree")
                         .append("svg")
-                            .attr("width", width)
-                            .attr("height", height);
+                            .attr("width", "100%")
+                            .attr("height",height)
+                            .append("g")
+                                .attr("transform",
+                                    `translate(${margin}, ${margin})`);
     // Creates a tree layout and assigns the size.
     const treemap = d3.tree()
         .size([width - 2 * margin, height - 2 * margin]);
 
     // Assigns parent, children, height, depth.
     const root = d3.hierarchy(mapping, d => d.dependencies);
+    console.log(root);
 
     // Assigns the x and y position for the nodes.
     const treeData = treemap(root);
+    console.log(treeData);
 
     // Creates a link path.
     const link = svg.selectAll(".link")
@@ -131,6 +136,16 @@ function generate_mapping_diagram(mapping) {
         .text(d => d.data.type + "Mapping");
 
     return svg;
+}
+
+
+/**
+ * Generates the stacked bar diagram representing cycles vs space.
+ *
+ * @param {Object} mapping  The JSON containing the mapping in a D3 hierarchy.
+ */
+function generate_stacked_plot(mapping) {
+
 }
 
 /** 

@@ -61,23 +61,14 @@ function mapping_to_hierarchy(mapping, root) {
     }
 }
 
-/** 
-* Starts generating the looptree visualization graphic once all the dependencies
-* have been loaded.*/
-function main() {
-    // Interprets the map_tree Python dictionary as a JSON object.
-    let map_tree = {{ map_tree|tojson }};
-
-    // Converts the map tree into a D3 parseable hierarchy structure.
-    let hierarchy = {
-        "dependencies": [],
-        "type": {{ mapping_type|tojson }},
-    };
-    mapping_to_hierarchy(map_tree, hierarchy);
-
-    // Fetches the container in which we want to display the visualization.
-    let display = document.getElementById("looptree");
-
+/**
+ * Generates a tree diagram of the mapping.
+ *
+ * @param {Object} mapping  The JSON containing the mapping in a D3 hierarchy.
+ *
+ * @return {Object} The D3 tree diagram as an SVG.
+ */
+function generate_mapping_diagram(mapping) {
     // Set the dimensions and margins of the diagram.
     const width = 1000;
     const height = 1000;
@@ -85,18 +76,15 @@ function main() {
 
     // Appends the svg object to the display.
     const svg = d3.select("#looptree")
-        .append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
+                        .append("svg")
+                            .attr("width", width)
+                            .attr("height", height);
     // Creates a tree layout and assigns the size.
     const treemap = d3.tree()
         .size([width - 2 * margin, height - 2 * margin]);
 
     // Assigns parent, children, height, depth.
-    const root = d3.hierarchy(hierarchy, d => d.dependencies);
-    root.x0 = `50%`;
-    root.y0 = 0;
+    const root = d3.hierarchy(mapping, d => d.dependencies);
 
     // Assigns the x and y position for the nodes.
     const treeData = treemap(root);
@@ -142,10 +130,25 @@ function main() {
     node.append("title")
         .text(d => d.data.type + "Mapping");
 
+    return svg;
+}
 
+/** 
+* Starts generating the looptree visualization graphic once all the dependencies
+* have been loaded.*/
+function main() {
+    // Interprets the map_tree Python dictionary as a JSON object.
+    let map_tree = {{ map_tree|tojson }};
 
-    // Displays the tree in looptree div.
-    document.getElementById("looptree").appendChild(node.node());
+    // Converts the map tree into a D3 parseable hierarchy structure.
+    let hierarchy = {
+        "dependencies": [],
+        "type": {{ mapping_type|tojson }},
+    };
+    mapping_to_hierarchy(map_tree, hierarchy);
+
+    // Generates the diagram.
+    let diagram = generate_mapping_diagram(hierarchy);
 }
 
 window.onload = main();

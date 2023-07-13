@@ -88,11 +88,9 @@ function generate_mapping_diagram(mapping) {
 
     // Assigns parent, children, height, depth.
     const root = d3.hierarchy(mapping, d => d.dependencies);
-    console.log(root);
 
     // Assigns the x and y position for the nodes.
     const treeData = treemap(root);
-    console.log(treeData);
 
     // Creates a link path.
     const link = svg.selectAll(".link")

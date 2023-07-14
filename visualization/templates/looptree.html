@@ -133,37 +133,86 @@ function diagram(mapping) {
             .text(d => d.data.type);
     
     // Updates the SVG on click such that the node clicked hides its children.
-    node.on("click", function(event, source) {
+    function update(event, source) {
         // If the node is a leaf, do nothing.
-        if (source.children || source._children) {
-            // If the node is expanded, hide the children.
-            if (source._children) {
-                source.children = source._children;
-                source._children = null;
-            // If the node is collapsed, show the children.
-            } else {
-                source._children = source.children;
-                source.children = null;
-            }
-            // Updates the tree.
-            const newTreeData = treemap(root);
-            // Updates the links.
-            link.data(newTreeData.descendants().slice(1));
-            // Updates the nodes.
-            node.data(newTreeData.descendants());
-            // Updates the node positions.
-            node.attr("transform", d => `translate(${d.x}, ${d.y})`);
-            // Updates the link positions.
-            link.attr("d", d => {
-                return `M ${d.x} ${d.y}
-                        C ${d.x} ${(d.y + d.parent.y) / 2},
-                        ${d.x} ${(d.y + d.parent.y) / 2},
-                        ${d.parent.x} ${d.parent.y}`;
-            });
+        if (source.children === undefined) {
+            return;
         }
 
-        document.getElementById("looptree").append(svg.node());
-    });
+        // If the node is expanded, hide its children.
+        if (source.children) {
+            source._children = source.children;
+            source.children = null;
+        }
+        // If the node is collapsed, reveal its children.
+        else {
+            source.children = source._children;
+            source._children = null;
+        }
+        
+        // Remove the old nodes.
+        node.exit().remove();
+        // Remove the old links.
+        link.exit().remove();
+
+        // Creates the SVG object.
+        const newSVG = d3.create("svg")
+                            .attr("width", width)
+                            .attr("height",height);
+        // Creates a bounding box inside the SVG for margin purposes.
+        const newG = newSVG.append("g")
+                        .attr("transform", `translate(${margin}, ${margin})`);
+
+        // Recalculate positions in the tree.
+        const newTreeData = treemap(root);
+
+        // Update the nodes.
+        const newNodes = newG.selectAll(".node")
+            .data(newTreeData.descendants())
+            .enter()
+            .append("g")
+                .attr("class", d => {
+                    return `node${d.children ? " node--internal" : " node--leaf"}`;
+                })
+                .attr("transform", d => `translate(${d.x}, ${d.y})`);
+        
+        // Update the links.
+        const newLinks = newG.selectAll(".link")
+            .data(newTreeData.descendants().slice(1))
+            .enter()
+            .append("path")
+                .attr("class", "link")
+                .attr("d", d => {
+                    return `M ${d.x} ${d.y}
+                            C ${d.x} ${(d.y + d.parent.y) / 2},
+                            ${d.x} ${(d.y + d.parent.y) / 2},
+                            ${d.parent.x} ${d.parent.y}`;
+                })
+                .style("fill", "none")
+                .attr("stroke", "#ccc");
+
+        // Adds the white text background to the node.
+        newNodes.append("text")
+                .style("text-anchor", "middle")
+                .style("z-index", 99)
+                .style("stroke", "white")
+                .style("stroke-width", "0.5em")
+                .text(d => d.data.type);
+        // Adds the text to the node.
+        newNodes.append("text") 
+                .style("text-anchor", "middle")
+                .style("z-index", 100)
+                .text(d => d.data.type);
+        
+        // Adds the click event to the new nodes.
+        newNodes.on("click", update);
+        document.getElementById("looptree").innerHTML = newSVG.node().outerHTML;
+        
+        console.log('click');
+    };
+
+    // Adds the click event to the nodes.
+    node.on("click", update);
 
     return svg;
 }

@@ -62,15 +62,33 @@ function mapping_to_hierarchy(mapping, root) {
 }
 
 /**
- * Generates graphics given a treemap.
+ * Generates a collapsible dendrogram given a D3 hierarchy.
  * 
- * @param {Object} svg      The svg image we're modifying.
  * @param {Object} root     The root of the data we want to map.
- * @param {Object} nodes    The node generic we want to append graphics to.
- * @param {Object} links    The link generic we want to append graphics to.
- * @param {Object} treemap  The node positioning function for the graphic.
  */
-function generateGraphics(svg, root, nodes, links, treemap) {
+function generateGraphics(root) {
+    // Set the dimensions and margins of the diagram.
+    const width = 1000;
+    const height = 1000;
+    const margin = 50;
+
+    // Creates the SVG object.
+    const svg = d3.create("svg")
+                    .attr("width", width)
+                    .attr("height",height);
+    // Creates a bounding box inside the SVG for margin purposes.
+    const g = svg.append("g")
+                    .attr("transform", `translate(${margin}, ${margin})`);
+
+    // Creates a tree layout calculator and assigns the size.
+    const treemap = d3.tree()
+        .size([width - 2 * margin, height - 2 * margin]);
+
+    // Creates generic for all links.
+    const links = g.selectAll(".link");
+    // Creates generic for all nodes.
+    const nodes = g.selectAll(".node");
+
     // Generates the mapping data.
     const data = treemap(root);
 
@@ -112,8 +130,12 @@ function generateGraphics(svg, root, nodes, links, treemap) {
             .style("z-index", 100)
             .text(d => d.data.type);
 
+    // Adds the click event to the nodes.
+    nodeGraphics.on("click", update);
+
     // Updates the SVG on click such that the node clicked hides its children.
     function update(event, source) {
+        console.log('click');
         // If the node is a leaf, do nothing.
         if (source.children === undefined) {
             return;
@@ -129,56 +151,10 @@ function generateGraphics(svg, root, nodes, links, treemap) {
             source.children = source._children;
             source._children = null;
         }
-        // Removes the old graphics.
-        linkGraphics.remove();
-        nodeGraphics.remove();
 
-        // Recalculate positions in the tree.
-        generateGraphics(svg, root, nodes, links, treemap);
-        document.getElementById("looptree").innerHTML = svg.node().outerHTML;
-        
-        console.log('click');
+        // Recalculate positions in the tree and append graphic
+        document.getElementById("looptree").replaceChildren(generateGraphics(root).node());
     }
-
-    // Adds the click event to the nodes.
-    nodeGraphics.on("click", update);
-}
-
-/**
- * Generates a tree diagram of the mapping.
- *
- * @param {Object} mapping  The JSON containing the mapping in a D3 hierarchy.
- *
- * @return {Object} The D3 tree diagram as an SVG.
- */
-function diagram(mapping) {
-    // Set the dimensions and margins of the diagram.
-    const width = 1000;
-    const height = 1000;
-    const margin = 50;
-
-    // Creates the SVG object.
-    const svg = d3.create("svg")
-                    .attr("width", width)
-                    .attr("height",height);
-    // Creates a bounding box inside the SVG for margin purposes.
-    const g = svg.append("g")
-                    .attr("transform", `translate(${margin}, ${margin})`);
-
-    // Creates a tree layout calculator and assigns the size.
-    const treemap = d3.tree()
-        .size([width - 2 * margin, height - 2 * margin]);
-
-    // Assigns parent, children, height, depth.
-    const root = d3.hierarchy(mapping, d => d.dependencies);
-
-    // Creates generic for all links.
-    const links = g.selectAll(".link");
-    // Creates generic for all nodes.
-    const nodes = g.selectAll(".node");
-
-    // Generates the graphics
-    generateGraphics(svg, root, nodes, links, treemap);
 
     return svg;
 }
@@ -197,9 +173,11 @@ function main() {
     };
     mapping_to_hierarchy(map_tree, hierarchy);
 
+    // Assigns parent, children, height, depth.
+    const root = d3.hierarchy(hierarchy, d => d.dependencies);
+
     // Generates the diagram.
-    let visual = diagram(hierarchy);
-    document.getElementById("looptree").append(visual.node());
+    document.getElementById("looptree").append(generateGraphics(root).node());
 }
 
 window.onload = main();

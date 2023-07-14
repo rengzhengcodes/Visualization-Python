@@ -64,15 +64,14 @@ function mapping_to_hierarchy(mapping, root) {
 /**
  * Generates a collapsible dendrogram given a D3 hierarchy.
  * 
- * @param {Object} root     The root of the data we want to map.
+* @param {Object} event    The root of the data we want to map.
  */
 function generateGraphics(root) {
     // Set the dimensions and margins of the diagram.
     const width = 1000;
     const height = 1000;
     const margin = 50;
-
-    // Creates the SVG object.
+    // Creates the SVG display.
     const svg = d3.create("svg")
                     .attr("width", width)
                     .attr("height",height);
@@ -84,12 +83,11 @@ function generateGraphics(root) {
     const treemap = d3.tree()
         .size([width - 2 * margin, height - 2 * margin]);
 
-    // Creates generic for all links.
+    // Creates generic for all links and nodes.
     const links = g.selectAll(".link");
-    // Creates generic for all nodes.
     const nodes = g.selectAll(".node");
 
-    // Generates the mapping data.
+    // Generates the position data.
     const data = treemap(root);
 
     // Assigns data to link generics and generates the path.
@@ -107,7 +105,7 @@ function generateGraphics(root) {
             .style("fill", "none")
             .attr("stroke", "#ccc");
 
-    // Assigns data to node generics and creates a graphics container for all nodes.
+    // Assigns data to node generics and creates a graphics container per node.
     let nodeGraphics = nodes
         .data(data.descendants())
         .enter()
@@ -116,7 +114,6 @@ function generateGraphics(root) {
                 return `node${d.children ? " node--internal" : " node--leaf"}`;
             })
             .attr("transform", d => `translate(${d.x}, ${d.y})`);
-
     // Adds the white text background to the node.
     nodeGraphics.append("text")
             .style("text-anchor", "middle")
@@ -129,12 +126,17 @@ function generateGraphics(root) {
             .style("text-anchor", "middle")
             .style("z-index", 100)
             .text(d => d.data.type);
-
     // Adds the click event to the nodes.
-    nodeGraphics.on("click", update);
+    nodeGraphics.on("click", toggleCollapse);
 
-    // Updates the SVG on click such that the node clicked hides its children.
-    function update(event, source) {
+    /**
+     * Updates the SVG on click such that the node clicked changes its collapse
+     * state.
+     *
+     * @param {Object} event    The event package.
+     * @param {Object} source   The node data that triggered the event.
+     */
+    function toggleCollapse(event, source) {
         console.log('click');
         // If the node is a leaf, do nothing.
         if (source.children === undefined) {

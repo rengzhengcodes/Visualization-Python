@@ -74,15 +74,15 @@ function generate_mapping_diagram(mapping) {
     const height = 1000;
     const margin = 50;
 
-    // Appends the svg object to the display.
-    const svg = d3.select("#looptree")
-                        .append("svg")
-                            .attr("width", width)
-                            .attr("height",height)
-                            .append("g")
-                                .attr("transform",
-                                    `translate(${margin}, ${margin})`);
-    // Creates a tree layout and assigns the size.
+    // Creates the SVG object.
+    const svg = d3.create("svg")
+                    .attr("width", width)
+                    .attr("height",height);
+    // Creates a bounding box inside the SVG for margin purposes.
+    const g = svg.append("g")
+                    .attr("transform", `translate(${margin}, ${margin})`);
+
+    // Creates a tree layout calculator and assigns the size.
     const treemap = d3.tree()
         .size([width - 2 * margin, height - 2 * margin]);
 
@@ -93,7 +93,7 @@ function generate_mapping_diagram(mapping) {
     const treeData = treemap(root);
 
     // Creates a link path.
-    const link = svg.selectAll(".link")
+    const link = g.selectAll(".link")
         .data(treeData.descendants().slice(1))
         .enter()
         .append("path")
@@ -109,7 +109,7 @@ function generate_mapping_diagram(mapping) {
 
 
     // Creates a node.
-    const node = svg.selectAll(".node")
+    const node = g.selectAll(".node")
         .data(treeData.descendants())
         .enter()
         .append("g")
@@ -155,6 +155,8 @@ function main() {
 
     // Generates the diagram.
     let diagram = generate_mapping_diagram(hierarchy);
+    console.log(diagram);
+    document.getElementById("looptree").append(diagram.node());
 }
 
 window.onload = main();

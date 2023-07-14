@@ -68,7 +68,7 @@ function mapping_to_hierarchy(mapping, root) {
  *
  * @return {Object} The D3 tree diagram as an SVG.
  */
-function generate_mapping_diagram(mapping) {
+function diagram(mapping) {
     // Set the dimensions and margins of the diagram.
     const width = 1000;
     const height = 1000;
@@ -131,10 +131,39 @@ function generate_mapping_diagram(mapping) {
             .style("text-anchor", "middle")
             .style("z-index", 100)
             .text(d => d.data.type);
+    
+    // Updates the SVG on click such that the node clicked hides its children.
+    node.on("click", function(event, source) {
+        // If the node is a leaf, do nothing.
+        if (source.children || source._children) {
+            // If the node is expanded, hide the children.
+            if (source._children) {
+                source.children = source._children;
+                source._children = null;
+            // If the node is collapsed, show the children.
+            } else {
+                source._children = source.children;
+                source.children = null;
+            }
+            // Updates the tree.
+            const newTreeData = treemap(root);
+            // Updates the links.
+            link.data(newTreeData.descendants().slice(1));
+            // Updates the nodes.
+            node.data(newTreeData.descendants());
+            // Updates the node positions.
+            node.attr("transform", d => `translate(${d.x}, ${d.y})`);
+            // Updates the link positions.
+            link.attr("d", d => {
+                return `M ${d.x} ${d.y}
+                        C ${d.x} ${(d.y + d.parent.y) / 2},
+                        ${d.x} ${(d.y + d.parent.y) / 2},
+                        ${d.parent.x} ${d.parent.y}`;
+            });
+        }
 
-    // Adds the title to the node.
-    node.append("title")
-        .text(d => d.data.type + "Mapping");
+        document.getElementById("looptree").append(svg.node());
+    });
 
     return svg;
 }
@@ -154,9 +183,9 @@ function main() {
     mapping_to_hierarchy(map_tree, hierarchy);
 
     // Generates the diagram.
-    let diagram = generate_mapping_diagram(hierarchy);
-    console.log(diagram);
-    document.getElementById("looptree").append(diagram.node());
+    let visual = diagram(hierarchy);
+    console.log(visual);
+    document.getElementById("looptree").append(visual.node());
 }
 
 window.onload = main();

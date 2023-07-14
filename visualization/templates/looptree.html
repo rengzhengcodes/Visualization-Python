@@ -71,8 +71,9 @@ function mapping_to_hierarchy(mapping, root) {
  * @param {Object} treemap  The node positioning function for the graphic.
  */
 function generateGraphics(svg, root, nodes, links, treemap) {
-    console.log(treemap);
+    // Generates the mapping data.
     const data = treemap(root);
+
     // Assigns data to link generics and generates the path.
     let linkGraphics = links
         .data(data.descendants().slice(1))
@@ -128,10 +129,9 @@ function generateGraphics(svg, root, nodes, links, treemap) {
             source.children = source._children;
             source._children = null;
         }
-
         // Removes the old graphics.
-        links.enter().remove();
-        nodes.enter().remove();
+        linkGraphics.remove();
+        nodeGraphics.remove();
 
         // Recalculate positions in the tree.
         generateGraphics(svg, root, nodes, links, treemap);

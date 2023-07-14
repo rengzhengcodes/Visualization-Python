@@ -62,6 +62,89 @@ function mapping_to_hierarchy(mapping, root) {
 }
 
 /**
+ * Generates graphics given a treemap.
+ * 
+ * @param {Object} svg      The svg image we're modifying.
+ * @param {Object} root     The root of the data we want to map.
+ * @param {Object} nodes    The node generic we want to append graphics to.
+ * @param {Object} links    The link generic we want to append graphics to.
+ * @param {Object} treemap  The node positioning function for the graphic.
+ */
+function generateGraphics(svg, root, nodes, links, treemap) {
+    console.log(treemap);
+    const data = treemap(root);
+    // Assigns data to link generics and generates the path.
+    let linkGraphics = links
+        .data(data.descendants().slice(1))
+        .enter()
+        .append("path")
+            .attr("class", "link")
+            .attr("d", d => {
+                return `M ${d.x} ${d.y}
+                        C ${d.x} ${(d.y + d.parent.y) / 2},
+                        ${d.x} ${(d.y + d.parent.y) / 2},
+                        ${d.parent.x} ${d.parent.y}`;
+            })
+            .style("fill", "none")
+            .attr("stroke", "#ccc");
+
+    // Assigns data to node generics and creates a graphics container for all nodes.
+    let nodeGraphics = nodes
+        .data(data.descendants())
+        .enter()
+        .append("g")
+            .attr("class", d => {
+                return `node${d.children ? " node--internal" : " node--leaf"}`;
+            })
+            .attr("transform", d => `translate(${d.x}, ${d.y})`);
+
+    // Adds the white text background to the node.
+    nodeGraphics.append("text")
+            .style("text-anchor", "middle")
+            .style("z-index", 99)
+            .style("stroke", "white")
+            .style("stroke-width", "0.5em")
+            .text(d => d.data.type);
+    // Adds the text to the node.
+    nodeGraphics.append("text") 
+            .style("text-anchor", "middle")
+            .style("z-index", 100)
+            .text(d => d.data.type);
+
+    // Updates the SVG on click such that the node clicked hides its children.
+    function update(event, source) {
+        // If the node is a leaf, do nothing.
+        if (source.children === undefined) {
+            return;
+        }
+
+        // If the node is expanded, hide its children.
+        if (source.children) {
+            source._children = source.children;
+            source.children = null;
+        }
+        // If the node is collapsed, reveal its children.
+        else {
+            source.children = source._children;
+            source._children = null;
+        }
+
+        // Removes the old graphics.
+        links.enter().remove();
+        nodes.enter().remove();
+
+        // Recalculate positions in the tree.
+        generateGraphics(svg, root, nodes, links, treemap);
+        document.getElementById("looptree").innerHTML = svg.node().outerHTML;
+        
+        console.log('click');
+    }
+
+    // Adds the click event to the nodes.
+    nodeGraphics.on("click", update);
+}
+
+/**
  * Generates a tree diagram of the mapping.
  *
  * @param {Object} mapping  The JSON containing the mapping in a D3 hierarchy.
@@ -89,87 +172,13 @@ function diagram(mapping) {
     // Assigns parent, children, height, depth.
     const root = d3.hierarchy(mapping, d => d.dependencies);
 
-    // Assigns the x and y position for the nodes.
-    const treeData = treemap(root);
-
     // Creates generic for all links.
     const links = g.selectAll(".link");
     // Creates generic for all nodes.
     const nodes = g.selectAll(".node");
 
-    function generateGraphics(data) {
-        // Assigns data to link generics and generates the path.
-        let linkGraphics = links
-            .data(treeData.descendants().slice(1))
-            .enter()
-            .append("path")
-                .attr("class", "link")
-                .attr("d", d => {
-                    return `M ${d.x} ${d.y}
-                            C ${d.x} ${(d.y + d.parent.y) / 2},
-                            ${d.x} ${(d.y + d.parent.y) / 2},
-                            ${d.parent.x} ${d.parent.y}`;
-                })
-                .style("fill", "none")
-                .attr("stroke", "#ccc");
-
-        // Assigns data to node generics and creates a graphics container for all nodes.
-        let nodeGraphics = nodes
-            .data(treeData.descendants())
-            .enter()
-            .append("g")
-                .attr("class", d => {
-                    return `node${d.children ? " node--internal" : " node--leaf"}`;
-                })
-                .attr("transform", d => `translate(${d.x}, ${d.y})`);
-
-        // Adds the white text background to the node.
-        nodeGraphics.append("text")
-                .style("text-anchor", "middle")
-                .style("z-index", 99)
-                .style("stroke", "white")
-                .style("stroke-width", "0.5em")
-                .text(d => d.data.type);
-        // Adds the text to the node.
-        nodeGraphics.append("text") 
-                .style("text-anchor", "middle")
-                .style("z-index", 100)
-                .text(d => d.data.type);
-        // Adds the click event to the nodes.
-        nodeGraphics.on("click", update);
-    }
-    generateGraphics(treeData);
-
-    // Updates the SVG on click such that the node clicked hides its children.
-    function update(event, source) {
-        // If the node is a leaf, do nothing.
-        if (source.children === undefined) {
-            return;
-        }
-
-        // If the node is expanded, hide its children.
-        if (source.children) {
-            source._children = source.children;
-            source.children = null;
-        }
-        // If the node is collapsed, reveal its children.
-        else {
-            source.children = source._children;
-            source._children = null;
-        }
-
-        // Removes the old graphics.
-        links.enter().remove();
-        nodes.enter().remove();
-
-        // Recalculate positions in the tree.
-        const newTreeData = treemap(root);
-        generateGraphics(newTreeData);
-
-        document.getElementById("looptree").innerHTML = svg.node().outerHTML;
-        
-        console.log('click');
-    };
+    // Generates the graphics
+    generateGraphics(svg, root, nodes, links, treemap);
 
     return svg;
 }
@@ -190,7 +199,6 @@ function main() {
 
     // Generates the diagram.
     let visual = diagram(hierarchy);
-    console.log(visual);
     document.getElementById("looptree").append(visual.node());
 }
 

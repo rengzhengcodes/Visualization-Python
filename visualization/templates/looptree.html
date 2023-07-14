@@ -92,8 +92,11 @@ function diagram(mapping) {
     // Assigns the x and y position for the nodes.
     const treeData = treemap(root);
 
-    // Creates a link path.
-    const link = g.selectAll(".link")
+    // Creates generic for all links.
+    const links = g.selectAll(".link");
+
+    // Assigns data to link generics and generates the path.
+    let linkGraphics = links
         .data(treeData.descendants().slice(1))
         .enter()
         .append("path")
@@ -108,8 +111,11 @@ function diagram(mapping) {
             .attr("stroke", "#ccc");
 
 
-    // Creates a node.
-    const node = g.selectAll(".node")
+    // Creates generic for all links.
+    const nodes = g.selectAll(".node");
+
+    // Assigns data to node generics and creates a graphics container for all nodes.
+    let nodeGraphics = nodes
         .data(treeData.descendants())
         .enter()
         .append("g")
@@ -118,16 +124,15 @@ function diagram(mapping) {
             })
             .attr("transform", d => `translate(${d.x}, ${d.y})`);
 
-    
     // Adds the white text background to the node.
-    node.append("text")
+    nodeGraphics.append("text")
             .style("text-anchor", "middle")
             .style("z-index", 99)
             .style("stroke", "white")
             .style("stroke-width", "0.5em")
             .text(d => d.data.type);
     // Adds the text to the node.
-    node.append("text") 
+    nodeGraphics.append("text") 
             .style("text-anchor", "middle")
             .style("z-index", 100)
             .text(d => d.data.type);
@@ -149,70 +154,61 @@ function diagram(mapping) {
             source.children = source._children;
             source._children = null;
         }
-        
-        // Remove the old nodes.
-        node.exit().remove();
-        // Remove the old links.
-        link.exit().remove();
 
-        // Creates the SVG object.
-        const newSVG = d3.create("svg")
-                            .attr("width", width)
-                            .attr("height",height);
-        // Creates a bounding box inside the SVG for margin purposes.
-        const newG = newSVG.append("g")
-                        .attr("transform", `translate(${margin}, ${margin})`);
+        // Removes the old graphics.
+        nodeGraphics.remove();
+        linkGraphics.remove();
 
         // Recalculate positions in the tree.
         const newTreeData = treemap(root);
 
-        // Update the nodes.
-        const newNodes = newG.selectAll(".node")
-            .data(newTreeData.descendants())
-            .enter()
-            .append("g")
-                .attr("class", d => {
-                    return `node${d.children ? " node--internal" : " node--leaf"}`;
-                })
-                .attr("transform", d => `translate(${d.x}, ${d.y})`);
-        
-        // Update the links.
-        const newLinks = newG.selectAll(".link")
-            .data(newTreeData.descendants().slice(1))
-            .enter()
-            .append("path")
-                .attr("class", "link")
-                .attr("d", d => {
-                    return `M ${d.x} ${d.y}
-                            C ${d.x} ${(d.y + d.parent.y) / 2},
-                            ${d.x} ${(d.y + d.parent.y) / 2},
-                            ${d.parent.x} ${d.parent.y}`;
-                })
-                .style("fill", "none")
-                .attr("stroke", "#ccc");
+        // Generates the new the graphics.
+        nodeGraphics = nodes
+                .data(newTreeData.descendants())
+                .enter()
+                .append("g")
+                    .attr("class", d => {
+                        return `node${d.children ? " node--internal" : " node--leaf"}`;
+                    })
+                    .attr("transform", d => `translate(${d.x}, ${d.y})`);
 
         // Adds the white text background to the node.
-        newNodes.append("text")
+        nodeGraphics.append("text")
                 .style("text-anchor", "middle")
                 .style("z-index", 99)
                 .style("stroke", "white")
                 .style("stroke-width", "0.5em")
                 .text(d => d.data.type);
         // Adds the text to the node.
-        newNodes.append("text") 
+        nodeGraphics.append("text") 
                 .style("text-anchor", "middle")
                 .style("z-index", 100)
                 .text(d => d.data.type);
         
-        // Adds the click event to the new nodes.
-        newNodes.on("click", update);
-        document.getElementById("looptree").innerHTML = newSVG.node().outerHTML;
+        linkGraphics = links
+                    .data(newTreeData.descendants().slice(1))
+                    .enter()
+                    .append("path")
+                        .attr("class", "link")
+                        .attr("d", d => {
+                            return `M ${d.x} ${d.y}
+                                    C ${d.x} ${(d.y + d.parent.y) / 2},
+                                    ${d.x} ${(d.y + d.parent.y) / 2},
+                                    ${d.parent.x} ${d.parent.y}`;
+                        })
+                        .style("fill", "none")
+                        .attr("stroke", "#ccc");
+        
+
+        nodeGraphics.on("click", update);
+
+        document.getElementById("looptree").innerHTML = svg.node().outerHTML;
         
         console.log('click');
     };
 
     // Adds the click event to the nodes.
-    node.on("click", update);
+    nodeGraphics.on("click", update);
 
     return svg;
 }
